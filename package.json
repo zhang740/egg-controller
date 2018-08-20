@@ -1,0 +1,100 @@
+{
+  "name": "egg-controller",
+  "version": "0.2.4",
+  "description": "controller for egg.",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "bin/**/*.js",
+    "bin/**/*.d.ts",
+    "app/**/*.js",
+    "app/**/*.js",
+    "app/**/*.d.ts",
+    "config/**/*.js",
+    "config/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "lib/**/*.njk",
+    "meta.js",
+    "meta.d.ts",
+    "error.js",
+    "error.d.ts",
+    "app.js",
+    "app.d.ts",
+    "agent.js",
+    "agent.d.ts"
+  ],
+  "eggPlugin": {
+    "name": "controller",
+    "dependencies": [
+      "aop"
+    ]
+  },
+  "egg": {
+    "typescript": true
+  },
+  "bin": {
+    "egg-controller": "./bin/index.js"
+  },
+  "dependencies": {
+    "@types/nunjucks": "^3.0.0",
+    "co": "^4.6.0",
+    "colorful": "^2.1.0",
+    "commander": "^2.17.1",
+    "egg-aop": "^0.5.2",
+    "nunjucks": "^3.1.3",
+    "parameter": "^2.4.0",
+    "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.1.0",
+    "@types/node": "^9.6.5",
+    "@types/supertest": "^2.0.4",
+    "autod": "^3.0.1",
+    "egg-bin": "^4.7.0",
+    "egg-ci": "^1.8.0",
+    "egg-mock": "^3.17.0",
+    "egg-ts-helper": "^1.6.0",
+    "egg": "^2.7.1",
+    "rimraf": "^2.6.2",
+    "supertest": "^3.0.0",
+    "tslint": "^5.9.1",
+    "typescript": "~3.0.1"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "scripts": {
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test -r egg-ts-helper/register --full-trace",
+    "cov": "egg-bin cov -r egg-ts-helper/register",
+    "lint": "tslint .",
+    "ci": "npm run cov",
+    "autod": "autod",
+    "ts": "rimraf app/**/*.js lib/**/*.js app/**/*.d.ts lib/**/*.d.ts && tsc",
+    "prepublish": "npm run ts",
+    "postpublish": "node scripts/published.js"
+  },
+  "ci": {
+    "version": "8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhang740/egg-controller.git"
+  },
+  "eslintIgnore": [
+    "coverage"
+  ],
+  "keywords": [
+    "egg",
+    "egg-controller",
+    "ts",
+    "controller"
+  ],
+  "author": "zhang740",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhang740/egg-controller/issues"
+  },
+  "homepage": "https://github.com/zhang740/egg-controller#readme"
+}

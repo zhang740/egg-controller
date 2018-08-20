@@ -1,0 +1,6 @@
+{
+  "name": "example",
+  "egg": {
+    "typescript": true
+  }
+}
