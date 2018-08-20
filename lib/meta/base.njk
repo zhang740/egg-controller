@@ -1,0 +1,32 @@
+import * as qs from 'query-string';
+
+export function joinQuery(data: { [x: string]: any }): string {
+  const s = qs.stringify(data, { arrayFormat: 'bracket' });
+  return s ? '?' + s : s;
+}
+
+export interface RequestProps {
+  method?: 'get' | 'post' | 'put' | 'delete';
+  url: string;
+  data?: any;
+}
+
+export default class Base {
+  protected async request(props: RequestProps) {
+    let url = props.url;
+    let body: any;
+    if ((props.method === 'get' || props.method === 'delete') && props.data) {
+      data = props.data;
+    } else {
+      url += joinQuery(props.data);
+    }
+    const fetchOpt: Request = {
+      url,
+      method: props.method,
+    };
+    if (body) {
+      fetchOpt.body = body;
+    }
+    return fetch(fetchOpt);
+  }
+}

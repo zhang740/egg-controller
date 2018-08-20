@@ -1,0 +1,29 @@
+import Base from './base';
+
+export class {{ className | capitalize }}Service extends Base {
+
+  {%- for mData in methodMetadata %}
+
+  /** {{ mData.name | safe }} {{ mData.description | safe }} */
+  async {{ mData.functionName }}(
+    {%- for p in mData.params -%}
+      {{ p.name }}{{ (": " + p.type + "") | safe if genType === "ts" }}{{ ", " if not loop.last }}
+    {%- endfor -%}
+  ) {
+    const __data = { {{- " " }}
+      {%- for p in mData.params -%}
+        {{ p.name if p.paramName === p.name else p.paramName + ": " + p.name }}{{ ", " if not loop.last }}
+      {%- endfor -%}
+    {{ " " -}} };
+    return await this.request({
+      method: `{{ mData.method }}`,
+      url: `{{ mData.url | safe }}`,
+      data: __data,
+    });
+  }
+  {%- endfor %}
+
+}
+
+export const {{ className }}Service = new {{ className | capitalize }}Service();
+export default new {{ className | capitalize }}Service();
