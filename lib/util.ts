@@ -112,3 +112,14 @@ export function loadDir(dirPath: string) {
   }
   return Array.from(new Set(files));
 }
+
+export function formatKey(key: string, type: string) {
+  const item = key.split('\n').map(val => val.trim());
+  if (item[0].includes(type)) {
+    item.shift();
+  }
+  if (item[item.length - 1].includes(type)) {
+    item.pop();
+  }
+  return `-----BEGIN ${type}-----\n${item.join('')}\n-----END ${type}-----`;
+}

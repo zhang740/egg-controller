@@ -64,5 +64,11 @@ describe('test/lib/route.test.js', () => {
       .get('/mw/ggmw?type=block')
       .expect(403);
   });
+
+  it('multi middleware, throw err', () => {
+    return request(app.callback())
+      .get('/mw/multi')
+      .expect(400);
+  });
 });
 

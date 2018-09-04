@@ -1,7 +1,12 @@
 import { route, getParamDataObj, MiddlewareType } from '../../../../../lib';
-import { ForbiddenError } from '../../../../../lib/error';
+import { ForbiddenError, BadRequestError } from '../../../../../lib/error';
 
-const asyncMiddleware: MiddlewareType = (_app, typeInfo) => {
+const errorMiddleware: MiddlewareType = (app, typeInfo) => {
+  return async (ctx, next) => {
+    throw new BadRequestError();
+  };
+};
+const asyncMiddleware: MiddlewareType = (app, typeInfo) => {
   return async (ctx, next) => {
     const params = await getParamDataObj(ctx, typeInfo);
     if (params.type === 'block') {
@@ -11,7 +16,7 @@ const asyncMiddleware: MiddlewareType = (_app, typeInfo) => {
   };
 };
 
-const genMiddleware: MiddlewareType = (_app, typeInfo) => {
+const genMiddleware: MiddlewareType = (app, typeInfo) => {
   return function* (ctx, next) {
     const params = yield getParamDataObj(ctx, typeInfo);
     if (params.type === 'block') {
@@ -42,5 +47,10 @@ export class MiddlewareController {
   @route({ url: '/mw/ggmw', name: 'gen function & middleware', middleware: [genMiddleware] })
   async ggmw(type: string) {
     return `ggmwCtrl:${type}`;
+  }
+
+  @route({ url: '/mw/multi', name: 'async function & middleware', middleware: [asyncMiddleware, errorMiddleware] })
+  async multi() {
+    return `multi`;
   }
 }

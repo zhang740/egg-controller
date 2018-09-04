@@ -21,6 +21,8 @@ export interface RouteMetadataType<ExtType = any> {
   onError?: (ctx: Context, error: Error) => void;
   /** param valid metadata */
   validateMetaInfo?: any[];
+  /** RSA encrypt */
+  encrypt?: boolean;
 
   /** close Tracking, default: false */
   noTracking?: boolean;

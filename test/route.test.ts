@@ -82,5 +82,12 @@ describe('test/lib/route.test.js', () => {
       .expect('customByconfig');
   });
 
+  it('getArray', () => {
+    return request(app.callback())
+      .get('/home/getArray?id[]=1&&id[]=2')
+      .expect({ id: [1, 2] })
+      .expect(200);
+  });
+
 });
 
