@@ -8,4 +8,11 @@ export default {
       ]
     }
   },
+  controller: {
+    encrypt: {
+      publicKey: require('./public').default,
+      privateKey: require('./private').default,
+      type: 'PKCS1',
+    },
+  }
 };

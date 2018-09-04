@@ -1,7 +1,9 @@
+import * as crypto from 'crypto';
 import { Context } from 'egg';
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from './type';
-import { getValue } from './util';
+import { getValue, formatKey } from './util';
+import { BadRequestError } from './error';
 export type ParamGetterType = (ctx: Context, name: string, type: any) => any;
 
 export interface ParamInfoType {
@@ -88,6 +90,27 @@ export function FromHeader(paramName?: string): ParameterDecorator {
 }
 
 async function getArgs(ctx: Context, typeInfo: RouteType) {
+  let resData: any;
+  if (typeInfo.encrypt) {
+    const reqData = ctx.request.body && ctx.request.body['encrypt'];
+    if (!reqData) {
+      throw new BadRequestError('encrypt param error');
+    }
+    const config = ctx.app.config.controller.encrypt;
+    const privateKeyType = config.type === 'PKCS8' ? 'PRIVATE KEY' : 'RSA PRIVATE KEY';
+    resData = JSON.parse(crypto.privateDecrypt(
+      formatKey(config.privateKey, privateKeyType),
+      new Buffer(reqData)
+    ).toString());
+  } else {
+    resData = {
+      ...ctx.request.body || {},
+      ...ctx.queries || {},
+      ...ctx.query || {},
+      ...ctx.params || {},
+    };
+  }
+
   return await Promise.all(typeInfo.paramTypes.map(async p => {
     const name = p.name;
     let argValue = undefined;
@@ -98,23 +121,7 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
     if (p.getter) {
       argValue = await p.getter(ctx, name, p.type);
     } else {
-      const param = ctx.params || {};
-      const query = ctx.query || {};
-      const queries = ctx.queries || {};
-      const body = (ctx.request || {} as any).body || {};
-
-      const isArrayType = typeof type === 'string' ? type.toLowerCase() === 'array' : type === Array;
-
-      if (name in param) {
-        argValue = param[name];
-      } else if (name in query && !isArrayType) {
-        argValue = query[name];
-      } else if (`${name}[]` in queries && isArrayType) {
-        // query传参支持数组形式 /xxx?a[]=1&a[]=2 => a = [1, 2]
-        argValue = queries[`${name}[]`];
-      } else if (name in body) {
-        argValue = body[name];
-      }
+      argValue = resData[name];
     }
 
     if (argValue === undefined) {

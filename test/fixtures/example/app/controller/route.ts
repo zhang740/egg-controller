@@ -41,4 +41,9 @@ export class HomeController {
   async customByconfig() {
     return 'customByconfig';
   }
+
+  @route('/home/getArray', { name: 'array' })
+  async getArray(id: number[]) {
+    return { id };
+  }
 }

@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
+    "typings/**/*.d.ts",
     "bin/**/*.js",
     "bin/**/*.d.ts",
     "app/**/*.js",
@@ -64,7 +65,8 @@
     "node": ">=8.9.0"
   },
   "scripts": {
-    "test": "npm run lint -- --fix && npm run test-local",
+    "clean:test": "rimraf test/fixtures/**/run/*.json",
+    "test": "npm run clean:test && npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test -r egg-ts-helper/register --full-trace",
     "cov": "egg-bin cov -r egg-ts-helper/register",
     "lint": "tslint .",
