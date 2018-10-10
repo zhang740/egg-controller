@@ -1,6 +1,5 @@
-const request = require('supertest');
-const mm = require('egg-mock');
-const assert = require('assert');
+import * as request from 'supertest';
+import mm from 'egg-mock';
 
 describe('test/lib/route.test.js', () => {
   let app: any;

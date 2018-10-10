@@ -1,4 +1,4 @@
-const assert = require('assert');
+import * as assert from 'assert';
 import util = require('../lib/util');
 
 describe('test/lib/route_util.test.js, getParameterNames', () => {

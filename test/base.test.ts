@@ -1,6 +1,5 @@
-const request = require('supertest');
-const mm = require('egg-mock');
-const assert = require('assert');
+import * as request from 'supertest';
+import mm from 'egg-mock';
 
 describe('base', () => {
   let app: any;
@@ -8,7 +7,7 @@ describe('base', () => {
     app = mm.app({
       baseDir: 'example',
       plugin: 'controller',
-    });
+    } as any);
     return app.ready();
   });
 
