@@ -47,27 +47,13 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       typeGlobalName,
       typeClass: CtrlType,
       functionName: key,
-      paramTypes: getParameterNames(routeFn).map((name, i) => {
-        const config = methodRules.config[i] || {} as ParamInfoType;
-        const validateTypeIndex = validateMetaInfo.findIndex(v => v.name === name);
-        return {
-          name,
-          type: paramTypes[i],
-          paramName: config.paramName,
-          getter: methodRules.param[i],
-          hidden: config.hidden,
-          validateType: validateTypeIndex >= 0 ?
-            validateMetaInfo.splice(validateTypeIndex, 1)[0].rule : undefined,
-        };
-      }),
+      paramTypes: [],
       returnType: Reflect.getMetadata('design:returntype', target, key),
       middleware: (data.middleware || []),
       call: () => target[key],
     };
-    if (validateMetaInfo.length) {
-      throw new Error(`[egg-controller] route: ${typeGlobalName}.${key} param validate defined error! no param use: ${JSON.stringify(validateMetaInfo)}`);
-    }
 
+    /** complete path & method info */
     const parsedPath = getNameAndMethod(typeInfo.functionName);
     if (!typeInfo.url) {
       const ctrl = typeGlobalName
@@ -88,9 +74,28 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
         typeInfo.url = methodAndPath[1];
       }
     }
-
     if (!typeInfo.method) {
       typeInfo.method = parsedPath.method;
+    }
+
+    /** complete params info */
+    const paths = typeof typeInfo.url === 'string' && typeInfo.url.split('/');
+    getParameterNames(routeFn).forEach((name, i) => {
+      const config = methodRules.config[i] || {} as ParamInfoType;
+      const validateTypeIndex = validateMetaInfo.findIndex(v => v.name === name);
+      typeInfo.paramTypes.push({
+        name,
+        type: paramTypes[i],
+        paramName: config.paramName,
+        getter: methodRules.param[i],
+        source: config.source || (paths && paths.some(p => p === `:${config.paramName || name}`) ? 'Param' : 'Any'),
+        hidden: config.hidden,
+        validateType: validateTypeIndex >= 0 ?
+          validateMetaInfo.splice(validateTypeIndex, 1)[0].rule : undefined,
+      });
+    });
+    if (validateMetaInfo.length) {
+      throw new Error(`[egg-controller] route: ${typeGlobalName}.${key} param validate defined error! no param use: ${JSON.stringify(validateMetaInfo)}`);
     }
 
     routes.push(typeInfo);

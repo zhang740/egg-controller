@@ -50,9 +50,9 @@ describe('test/lib/route.test.js', () => {
       });
   });
 
-  it('should GET /home/default', () => {
+  it('should GET /route/default', () => {
     return request(app.callback())
-      .get('/home/default')
+      .get('/route/default')
       .expect(200)
       .expect('ok');
   });

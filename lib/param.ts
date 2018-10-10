@@ -6,6 +6,8 @@ import { getValue, formatKey } from './util';
 import { BadRequestError } from './error';
 export type ParamGetterType = (ctx: Context, name: string, type: any) => any;
 
+export type ParamSourceEnum = 'Any' | 'Query' | 'Body' | 'Param' | 'Header';
+
 export interface ParamInfoType {
   /** 函数参数名 */
   name: string;
@@ -14,6 +16,8 @@ export interface ParamInfoType {
   getter?: ParamGetterType;
   /** 参数类型 */
   type: any;
+  /** 参数来源 */
+  source: ParamSourceEnum;
   hidden?: boolean;
   /** 增强参数类型，ts-metadata */
   validateType: any;
@@ -28,7 +32,7 @@ const extRules: {
       [name: string]: {
         paramName: string,
         hidden?: boolean,
-        source?: string,
+        source?: ParamSourceEnum,
       };
     },
   }
@@ -49,7 +53,7 @@ export function getMethodRules(target: any, key: string) {
 
 export function FromCustom(custom: ParamGetterType, paramName?: string, config?: {
   hidden?: boolean;
-  source?: string;
+  source?: ParamSourceEnum;
 }): ParameterDecorator {
   return (target, key, index) => {
     const methodRule = getMethodRules(target, key as string);

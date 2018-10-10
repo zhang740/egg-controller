@@ -1,7 +1,7 @@
 import { route } from '../../../../../lib';
 import { NotFoundError } from '../../../../../lib/error';
 
-export class HomeController {
+export class RouteController {
 
   @route({ url: '/home/index', name: '首页' })
   async index() {

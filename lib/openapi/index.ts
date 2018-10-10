@@ -1,6 +1,6 @@
 import {
   OpenApiBuilder, InfoObject, ContactObject, TagObject,
-  OperationObject, ResponsesObject, ParameterObject,
+  OperationObject, ResponsesObject, ParameterObject, MediaTypeObject, SchemaObject,
 } from 'openapi3-ts';
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from '../type';
@@ -35,7 +35,32 @@ export function convertToOpenAPI(info: {
         [].concat(item.method).forEach((method: string) => {
           method = method.toLowerCase();
 
-          const params = item.paramTypes;
+          const hasBody = ['post', 'put'].some(m => m === item.method);
+          const paramFilter = p => {
+            if (p.source === 'Any') {
+              return !hasBody;
+            }
+            return p.source !== 'Body';
+          };
+
+          const inParam = item.paramTypes.filter(paramFilter);
+          const inBody: MediaTypeObject = {
+            schema: {
+              properties: {},
+            },
+          };
+          item.paramTypes.filter(p => !paramFilter(p))
+            .forEach(p => {
+              const type = getValue(() => p.validateType.type, getGlobalType(p.type)).toLowerCase();
+              const props = (inBody.schema as SchemaObject).properties;
+              props[p.paramName || p.name] = {
+                type,
+                items: type === 'array' ? {
+                  type: getValue(() => p.validateType.itemType, 'object'),
+                } : undefined,
+              };
+            });
+
           const responses: ResponsesObject = {
             default: { description: 'default' }
           };
@@ -44,11 +69,15 @@ export function convertToOpenAPI(info: {
             tags: [item.typeGlobalName],
             summary: item.name,
             description: item.description,
-            parameters: params.length ? params.map(p => {
+            parameters: inParam.length ? inParam.map(p => {
               const type = getValue(() => p.validateType.type, getGlobalType(p.type)).toLowerCase();
+              const source = p.source === 'Header' ? 'header' :
+                p.source === 'Param' ? 'path' :
+                  'query';
               return {
                 name: p.paramName || p.name,
-                in: 'query',
+                in: source,
+                required: source === 'path' || getValue(() => p.validateType.required),
                 schema: {
                   type: ['array', 'boolean', 'integer', 'number', 'object', 'string']
                     .some(t => t === type) ? type : 'object',
@@ -58,12 +87,9 @@ export function convertToOpenAPI(info: {
                 },
               } as ParameterObject;
             }) : undefined,
-            requestBody: ['post', 'put'].find(m => m === item.method) ? {
+            requestBody: hasBody ? {
               content: {
-                'application/json': {
-                  schema: {},
-                  example: { value: {} }
-                }
+                'application/json': inBody,
               },
             } : undefined,
             responses,
