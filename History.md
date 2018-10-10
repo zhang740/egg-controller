@@ -1,4 +1,10 @@
 
+0.2.8 / 2018-10-10
+==================
+
+  * feat: add @controller, lazy complete route url.
+  * feat: improve param info for OpenAPI.
+
 0.2.7 / 2018-10-10
 ==================
 
