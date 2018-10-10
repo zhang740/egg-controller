@@ -76,7 +76,7 @@ export function getParameterNames(fn: Function | string) {
     .match(/([^\s,]+)/g) || [];
 }
 
-export function getValue<T = any>(func: () => T, defaultValue: T) {
+export function getValue<T = any>(func: () => T, defaultValue?: T) {
   try {
     return func();
   } catch (error) {

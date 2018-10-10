@@ -42,7 +42,14 @@ export class HomeController {
     return 'customByconfig';
   }
 
-  @route('/home/getArray', { name: 'array' })
+  /** need the type info 'number' of array */
+  @route('/home/getArray', {
+    name: 'array', validateMetaInfo: [{
+      name: 'id', rule: {
+        type: 'array', itemType: 'number'
+      }
+    }]
+  })
   async getArray(id: number[]) {
     return { id };
   }

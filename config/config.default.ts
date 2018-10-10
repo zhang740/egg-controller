@@ -17,7 +17,7 @@ export default {
       SDKDir: path.join('app', 'assets', 'service'),
       /** generate template */
       templatePath: '',
-      /** route filter for generate */
+      /** route filter for generate, default: ^\/api\/ */
       filter: [/^\/api\//g] as RegExp[],
     },
     /** RSA key */
@@ -30,7 +30,7 @@ export default {
     compatible: {
       /**
        * return 404 when controller didn't change ctx.body (egg default)
-       * if 'false', will return 204
+       * if 'false', will return 204 (default)
        */
       ret404WhenNoChangeBody: false,
     }
