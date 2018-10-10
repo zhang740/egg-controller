@@ -1,7 +1,7 @@
 const assert = require('assert');
 import util = require('../lib/util');
 
-describe('test/lib/route_util.test.js', () => {
+describe('test/lib/route_util.test.js, getParameterNames', () => {
 
   it('normal function', () => {
     function test(a, b, c) { }
@@ -46,3 +46,31 @@ describe('test/lib/route_util.test.js', () => {
 
 });
 
+describe('test/lib/route_util.test.js, getNameAndMethod', () => {
+
+  it('get', () => {
+    const params = util.getNameAndMethod('findUser');
+    assert.deepEqual(params, { name: 'user', method: 'get' });
+  });
+
+  it('get, other', () => {
+    const params = util.getNameAndMethod('other');
+    assert.deepEqual(params, { name: 'other', method: 'get' });
+  });
+
+  it('post', () => {
+    const params = util.getNameAndMethod('createUser');
+    assert.deepEqual(params, { name: 'user', method: 'post' });
+  });
+
+  it('put', () => {
+    const params = util.getNameAndMethod('modifyUser');
+    assert.deepEqual(params, { name: 'user', method: 'put' });
+  });
+
+  it('delete', () => {
+    const params = util.getNameAndMethod('deleteUser');
+    assert.deepEqual(params, { name: 'user', method: 'delete' });
+  });
+
+});

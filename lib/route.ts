@@ -68,14 +68,13 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       throw new Error(`[egg-controller] route: ${typeGlobalName}.${key} param validate defined error! no param use: ${JSON.stringify(validateMetaInfo)}`);
     }
 
-    let name = getNameAndMethod(typeInfo.functionName);
-
+    const parsedPath = getNameAndMethod(typeInfo.functionName);
     if (!typeInfo.url) {
       const ctrl = typeGlobalName
         .split('_')[0]
         .toLowerCase()
         .replace('controller', '');
-      typeInfo.url = `/${ctrl}/${name.name}`;
+      typeInfo.url = `/${ctrl}/${parsedPath.name}`;
     } else if (typeof typeInfo.url === 'string') {
       const methodAndPath = typeInfo.url.split(/\s+/).map(s => s.trim());
       if (
@@ -91,7 +90,7 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
     }
 
     if (!typeInfo.method) {
-      typeInfo.method = name.method;
+      typeInfo.method = parsedPath.method;
     }
 
     routes.push(typeInfo);

@@ -17,21 +17,29 @@ export type MethodType =
   // from egg
   'all' | 'resources' | 'register' | 'redirect';
 
-const methods: MethodType[] = ['get', 'put', 'post', 'delete', 'patch'];
-export function getNameAndMethod(functionName: string) {
-  let name = functionName, functionMethod: MethodType = 'get';
-  functionName = functionName.toLowerCase();
+const methodPrefix: { method: MethodType, keys: string[] }[] = [
+  { method: 'get', keys: ['get', 'find', 'query'] },
+  { method: 'put', keys: ['put', 'modify', 'save', 'update', 'change'] },
+  { method: 'post', keys: ['post', 'add', 'create'] },
+  { method: 'delete', keys: ['delete', 'remove'] },
+];
+export function getNameAndMethod(funcName: string) {
+  let method: MethodType = 'get', name = funcName;
 
-  for (let i = 0; i < methods.length; i++) {
-    const method = methods[i];
-    if (functionName.startsWith(method)) {
-      name = functionName.substring(method.length) || functionName;
-      functionMethod = method;
-      break;
+  let tmpName = funcName.toLowerCase(), usePrefix = '';
+  const prefix = methodPrefix.find(p => p.keys.some(k => {
+    if (tmpName.startsWith(k)) {
+      usePrefix = k;
+      return true;
     }
+    return false;
+  }));
+  if (prefix) {
+    name = tmpName.substring(usePrefix.length) || funcName;
+    method = prefix.method;
   }
 
-  return { name, method: functionMethod };
+  return { name, method };
 }
 
 const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;

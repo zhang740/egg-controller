@@ -27,7 +27,7 @@ export function paramValidateMiddleware(app: Application, typeInfo: RouteType) {
       if (error) {
         const reason = [
           `param validate fail，paramName：${paramName}`,
-          `Value：${paramData[index]}`,
+          `Value：${JSON.stringify(paramData[index])}`,
           `Rule：${JSON.stringify(rule)}`,
           `Info：${JSON.stringify(error)}`,
         ].join(', ');
