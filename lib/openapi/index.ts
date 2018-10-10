@@ -5,6 +5,7 @@ import {
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from '../type';
 import { getValue } from '../util';
+import { getControllerMetadata } from '../controller';
 
 /** convert routeData to OpenAPI(3.x) json schema */
 export function convertToOpenAPI(info: {
@@ -24,9 +25,10 @@ export function convertToOpenAPI(info: {
     [].concat(item.url).forEach(url => {
       if (typeof url === 'string') {
         if (!tags.find(t => t.name === item.typeGlobalName)) {
+          const ctrlMeta = getControllerMetadata(item.typeClass);
           tags.push({
             name: item.typeGlobalName,
-            description: item.description,
+            description: ctrlMeta && `${ctrlMeta.name || ''} ${ctrlMeta.description || ''}`,
           });
         }
         if (!paths[url]) {

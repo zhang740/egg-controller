@@ -7,6 +7,7 @@ import { getParameterNames, getNameAndMethod, isGeneratorFunction } from './util
 import { RouteType, RouteMetadataType, MiddlewareType } from './type';
 import { ParamInfoType, getMethodRules, getParamData } from './param';
 import { paramValidateMiddleware } from './middleware/param';
+import { getControllerMetadata } from './controller';
 
 let defaultMiddleware: MiddlewareType[] = [];
 
@@ -14,7 +15,10 @@ export function addDefaultMiddleware(middleware: MiddlewareType | MiddlewareType
   defaultMiddleware = defaultMiddleware.concat(middleware);
 }
 
-const routes: RouteType[] = [];
+const routes: {
+  init: () => RouteType,
+  value?: RouteType,
+}[] = [];
 
 /** 路由注解 */
 export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, data: RouteMetadataType<T> = {}): MethodDecorator {
@@ -26,8 +30,8 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
   }
 
   return function (target: any, key: string) {
-    const typeGlobalName = getGlobalType(target.constructor);
     const CtrlType = target.constructor;
+    const typeGlobalName = getGlobalType(CtrlType);
     const routeFn: Function = target[key];
 
     const paramTypes = Reflect.getMetadata('design:paramtypes', target, key) || [];
@@ -53,31 +57,6 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       call: () => target[key],
     };
 
-    /** complete path & method info */
-    const parsedPath = getNameAndMethod(typeInfo.functionName);
-    if (!typeInfo.url) {
-      const ctrl = typeGlobalName
-        .split('_')[0]
-        .toLowerCase()
-        .replace('controller', '');
-      typeInfo.url = `/${ctrl}/${parsedPath.name}`;
-    } else if (typeof typeInfo.url === 'string') {
-      const methodAndPath = typeInfo.url.split(/\s+/).map(s => s.trim());
-      if (
-        methodAndPath.length > 1 &&
-        ['get', 'put', 'post', 'delete', 'patch'].indexOf(methodAndPath[0].toLowerCase()) >= 0
-      ) {
-        typeInfo.method = [...new Set([]
-          .concat(methodAndPath[0] || [])
-          .concat(typeInfo.method || []))
-        ];
-        typeInfo.url = methodAndPath[1];
-      }
-    }
-    if (!typeInfo.method) {
-      typeInfo.method = parsedPath.method;
-    }
-
     /** complete params info */
     const paths = typeof typeInfo.url === 'string' && typeInfo.url.split('/');
     getParameterNames(routeFn).forEach((name, i) => {
@@ -97,8 +76,6 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
     if (validateMetaInfo.length) {
       throw new Error(`[egg-controller] route: ${typeGlobalName}.${key} param validate defined error! no param use: ${JSON.stringify(validateMetaInfo)}`);
     }
-
-    routes.push(typeInfo);
 
     // ensure initMiddleware is execute first
     typeInfo.middleware.unshift(...defaultMiddleware);
@@ -141,7 +118,7 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
         }
         if (ret instanceof Error) {
           if (ctx.app.env === 'local') {
-            throw new Error('请 throw Error 替代 return Error');
+            throw new Error('请用 throw Error 替代 return Error');
           } else {
             throw ret;
           }
@@ -161,10 +138,46 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
 
     value.__name = key;
     typeInfo.call = () => value;
+
+    routes.push({
+      init: () => {
+        const ctrlMeta = getControllerMetadata(CtrlType);
+        const prefix = (ctrlMeta && ctrlMeta.prefix) ||
+          `/${typeGlobalName.split('_')[0].toLowerCase().replace('controller', '')}`;
+
+        /** complete path & method info */
+        const parsedPath = getNameAndMethod(typeInfo.functionName);
+        if (!typeInfo.url) {
+          typeInfo.url = `${prefix}/${parsedPath.name}`;
+        } else if (typeof typeInfo.url === 'string') {
+          const methodAndPath = typeInfo.url.split(/\s+/).map(s => s.trim());
+          if (
+            methodAndPath.length > 1 &&
+            ['get', 'put', 'post', 'delete', 'patch'].indexOf(methodAndPath[0].toLowerCase()) >= 0
+          ) {
+            typeInfo.method = [...new Set([]
+              .concat(methodAndPath[0] || [])
+              .concat(typeInfo.method || []))
+            ];
+            typeInfo.url = methodAndPath[1];
+          }
+        }
+        if (!typeInfo.method) {
+          typeInfo.method = parsedPath.method;
+        }
+
+        return typeInfo;
+      }
+    });
   };
 }
 
 /** 路由列表 */
 export function getRoutes<ExtType = any>() {
-  return routes as RouteType<ExtType>[];
+  routes.forEach(r => {
+    if (!r.value) {
+      r.value = r.init();
+    }
+  });
+  return routes.map(r => r.value) as RouteType<ExtType>[];
 }
