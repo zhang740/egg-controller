@@ -1,4 +1,13 @@
 
+0.2.7 / 2018-10-10
+==================
+
+  * feat: add gen OpenAPI json schema data.
+  * update: refactor formatArg.
+  * fix: gen sdk when ctrlDir is array.
+  * refactor: name and method detect.
+  * feat: upgrade parameter.
+
 0.2.6 / 2018-09-05
 ==================
 
