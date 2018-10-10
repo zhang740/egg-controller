@@ -10,13 +10,19 @@ export default (agent: Agent) => {
     if (!SDKDir) {
       throw new Error(`[egg-controller] NEED 'SDKDir' in config!`);
     }
-    const ctrlDir = path.isAbsolute(config.ctrlDir) ? config.ctrlDir : path.join(agent.baseDir, config.ctrlDir);
+    const ctrlDir = ([] as string[]).concat(config.ctrlDir).map(dir => {
+      return path.isAbsolute(dir) ? dir : path.join(agent.baseDir, dir);
+    });
     SDKDir = path.isAbsolute(SDKDir) ? SDKDir : path.join(agent.baseDir, SDKDir);
-    genAPISDKByPath(ctrlDir, SDKDir, templatePath, type, filter);
+
     console.log('[egg-controller] gen api sdk.');
-    (agent as any).watcher.watch(ctrlDir, (file: any) => {
-      console.log('[egg-controller] file changed', file.path);
-      genAPISDKByPath(file.path, SDKDir, templatePath, type, filter);
+    genAPISDKByPath(ctrlDir, SDKDir, templatePath, type, filter);
+
+    ctrlDir.forEach(dir => {
+      (agent as any).watcher.watch(dir, (file: any) => {
+        console.log('[egg-controller] file changed', file.path);
+        genAPISDKByPath(file.path, SDKDir, templatePath, type, filter);
+      });
     });
   }
 };
