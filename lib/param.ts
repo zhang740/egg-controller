@@ -89,6 +89,60 @@ export function FromHeader(paramName?: string): ParameterDecorator {
   );
 }
 
+function formatArg(argValue: any, validateType: any) {
+  const type = getValue(() => validateType.type, 'any');
+  // 类型转换
+  switch (type) {
+    case Number:
+    case 'number':
+      argValue = parseFloat(argValue);
+      break;
+
+    case 'int':
+    case 'integer':
+      argValue = parseInt(argValue);
+      break;
+
+    case Date:
+    case 'date':
+    case 'dateTime':
+    case 'datetime':
+      argValue = new Date(argValue);
+
+    case Boolean:
+    case 'boolean':
+      if (argValue === 'true' || argValue === '1' || argValue === 1) {
+        argValue = true;
+      } else if (argValue === 'false' || argValue === '0' || argValue === 0) {
+        argValue = false;
+      }
+      break;
+
+    case Object:
+    case 'object':
+    case undefined:
+      try {
+        argValue = JSON.parse(argValue);
+      } catch (error) {
+      }
+      break;
+
+    case Array:
+    case 'array':
+      const type = getValue(() => validateType.itemType) || 'any';
+      argValue = argValue.map(arg => {
+        return formatArg(arg, { type });
+      });
+      break;
+
+    // TODO 自定义类型，new实例，或者属性赋值
+
+    // string, enum 无需转换
+  }
+
+  return argValue;
+}
+
 async function getArgs(ctx: Context, typeInfo: RouteType) {
   let resData: any;
   if (typeInfo.encrypt) {
@@ -115,8 +169,6 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
     const name = p.name;
     let argValue = undefined;
 
-    const type = getValue(() => p.validateType.type, p.type);
-
     // 获取参数值
     if (p.getter) {
       argValue = await p.getter(ctx, name, p.type);
@@ -128,47 +180,7 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
       return argValue;
     }
 
-    // 类型转换
-    switch (type) {
-      case Number:
-      case 'number':
-        argValue = parseFloat(argValue);
-        break;
-
-      case 'int':
-      case 'integer':
-        argValue = parseInt(argValue);
-        break;
-
-      case Date:
-      case 'date':
-      case 'dateTime':
-      case 'datetime':
-        argValue = new Date(argValue);
-
-      case Boolean:
-      case 'boolean':
-        if (argValue === 'true' || argValue === '1' || argValue === 1) {
-          argValue = true;
-        } else if (argValue === 'false' || argValue === '0' || argValue === 0) {
-          argValue = false;
-        }
-        break;
-
-      case Object:
-      case undefined:
-        try {
-          argValue = JSON.parse(argValue);
-        } catch (error) {
-        }
-        break;
-
-      // TODO 自定义类型，new实例，或者属性赋值
-
-      // string, enum 无需转换
-    }
-
-    return argValue;
+    return formatArg(argValue, getValue(() => p.validateType) || p.type);
   }));
 }
 
