@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Application } from 'egg';
 import { getRoutes } from './route';
+import { convertToOpenAPI } from './openapi';
 
 export function registerRoute(app: Application) {
   const routeDatas: any = {};
@@ -44,5 +45,21 @@ export function registerRoute(app: Application) {
   fs.writeFileSync(
     path.join(app.baseDir, 'run', 'route_map.json'),
     JSON.stringify(routeDatas, null, 2), { encoding: 'utf8' }
+  );
+
+  const pkg = app.config.pkg;
+  fs.writeFileSync(
+    path.join(app.baseDir, 'run', 'openapi_3.json'),
+    JSON.stringify(convertToOpenAPI({
+      base: {
+        title: pkg.name || app.config.name,
+        version: pkg.version,
+      },
+      contact: {
+        name: pkg.author,
+        url: pkg.homepage,
+        email: undefined,
+      },
+    }, getRoutes()), null, 2), { encoding: 'utf8' }
   );
 }
