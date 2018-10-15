@@ -1,4 +1,11 @@
 
+0.2.9 / 2018-10-15
+==================
+
+  * docs: update.
+  * feat: controller level middleware & RESTful style controller.
+  * feat: api info report.
+
 0.2.8 / 2018-10-10
 ==================
 
