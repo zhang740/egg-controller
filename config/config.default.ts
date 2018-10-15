@@ -20,6 +20,12 @@ export default {
       /** route filter for generate, default: ^\/api\/ */
       filter: [/^\/api\//g] as RegExp[],
     },
+    /** api info report */
+    apiReport: {
+      enable: false,
+      /** send url, data is OpenAPI 3.0 schema json data */
+      url: '',
+    },
     /** RSA key */
     encrypt: {
       publicKey: '',
