@@ -3,7 +3,7 @@ import { MethodType } from './util';
 export { MethodType };
 import { ParamInfoType } from './param';
 
-/** 注解元信息 */
+/** 路由注解元信息 */
 export interface RouteMetadataType<ExtType = any> {
   /** router name */
   name?: string;
@@ -20,7 +20,15 @@ export interface RouteMetadataType<ExtType = any> {
   /** callback of the router function throw error */
   onError?: (ctx: Context, error: Error) => void;
   /** param valid metadata */
-  validateMetaInfo?: any[];
+  validateMetaInfo?: {
+    name: string;
+    rule: {
+      type: string | any;
+      required?: boolean;
+      default?: any;
+      [other: string]: any;
+    }
+  }[];
   /** RSA encrypt */
   encrypt?: boolean;
 
@@ -38,10 +46,31 @@ export type MiddlewareType = (app: Application, typeInfo: RouteType) => Middlewa
 
 /** 路由类型信息 */
 export interface RouteType<ExtType = any> extends RouteMetadataType<ExtType> {
-  typeClass: any;
-  typeGlobalName: string;
-  functionName: string;
+  readonly typeClass: any;
+  readonly typeGlobalName: string;
+  readonly functionName: string;
   paramTypes: ParamInfoType[];
   returnType: any;
   call: () => (ctx: Context) => any;
+}
+
+/** 控制器注解元信息 */
+export interface ControllerMetadataType {
+  name?: string;
+  description?: string;
+  /** prefix for @route url */
+  prefix?: string;
+  /** middleware of the class's routers, earlier than router's middleware */
+  middleware?: MiddlewareType[];
+  /** gen rest urls */
+  restful?: boolean;
+}
+
+/** 控制器类型信息 */
+export interface ControllerType extends ControllerMetadataType {
+  /** file path of controller */
+  readonly filePath: string;
+  readonly classType: any;
+  init: boolean;
+  routes: RouteType[];
 }

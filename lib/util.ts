@@ -21,7 +21,7 @@ const methodPrefix: { method: MethodType, keys: string[] }[] = [
   { method: 'get', keys: ['get', 'find', 'query'] },
   { method: 'put', keys: ['put', 'modify', 'save', 'update', 'change'] },
   { method: 'post', keys: ['post', 'add', 'create'] },
-  { method: 'delete', keys: ['delete', 'remove'] },
+  { method: 'delete', keys: ['delete', 'remove', 'destroy'] },
 ];
 export function getNameAndMethod(funcName: string) {
   let method: MethodType = 'get', name = funcName;
@@ -99,7 +99,7 @@ function getFile(filePath: string) {
   }
 }
 
-export function loadDir(dirPath: string) {
+export function getDirFiles(dirPath: string) {
   const files: string[] = [];
   const dirStat = fs.statSync(dirPath);
   if (dirStat.isFile()) {
@@ -111,7 +111,7 @@ export function loadDir(dirPath: string) {
         const fullPath = path.join(dirPath, dirName);
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
-          files.push(...loadDir(fullPath));
+          files.push(...getDirFiles(fullPath));
         } else if (stat.isFile()) {
           const filePath = getFile(fullPath);
           filePath && files.push(filePath);
@@ -119,6 +119,20 @@ export function loadDir(dirPath: string) {
       });
   }
   return Array.from(new Set(files));
+}
+
+/** work with loadDir/loadFile */
+let currentLoadFilePath: string = undefined;
+export function loadDir(dirPath: string) {
+  return getDirFiles(dirPath).forEach(filePath => loadFile(filePath));
+}
+export function loadFile(filePath: string) {
+  currentLoadFilePath = filePath;
+  require(filePath);
+  currentLoadFilePath = undefined;
+}
+export function getCurrentLoadFilePath() {
+  return currentLoadFilePath;
 }
 
 export function formatKey(key: string, type: string) {

@@ -3,22 +3,11 @@ import * as co from 'co';
 import { Context } from 'egg';
 import { getGlobalType } from 'power-di/utils';
 import { getInstance } from 'egg-aop';
-import { getParameterNames, getNameAndMethod, isGeneratorFunction } from './util';
-import { RouteType, RouteMetadataType, MiddlewareType } from './type';
+import { getParameterNames, isGeneratorFunction } from './util';
+import { RouteType, RouteMetadataType } from './type';
 import { ParamInfoType, getMethodRules, getParamData } from './param';
 import { paramValidateMiddleware } from './middleware/param';
 import { getControllerMetadata } from './controller';
-
-let defaultMiddleware: MiddlewareType[] = [];
-
-export function addDefaultMiddleware(middleware: MiddlewareType | MiddlewareType[]) {
-  defaultMiddleware = defaultMiddleware.concat(middleware);
-}
-
-const routes: {
-  init: () => RouteType,
-  value?: RouteType,
-}[] = [];
 
 /** 路由注解 */
 export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, data: RouteMetadataType<T> = {}): MethodDecorator {
@@ -64,7 +53,7 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       const validateTypeIndex = validateMetaInfo.findIndex(v => v.name === name);
       typeInfo.paramTypes.push({
         name,
-        type: paramTypes[i],
+        type: paramTypes[i] === undefined ? Object : paramTypes[i],
         paramName: config.paramName,
         getter: methodRules.param[i],
         source: config.source || (paths && paths.some(p => p === `:${config.paramName || name}`) ? 'Param' : 'Any'),
@@ -77,33 +66,10 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       throw new Error(`[egg-controller] route: ${typeGlobalName}.${key} param validate defined error! no param use: ${JSON.stringify(validateMetaInfo)}`);
     }
 
-    // ensure initMiddleware is execute first
-    typeInfo.middleware.unshift(...defaultMiddleware);
     // add param validate middleware
     typeInfo.middleware.push(paramValidateMiddleware);
 
-    // catch the middleware error for onError
-    typeInfo.middleware = typeInfo.middleware.map(mw => {
-      return (app: any, typeInfo: RouteType) => {
-        const func: any = mw(app, typeInfo);
-        return [].concat(func).filter(s => s).map(item => {
-          return async function (ctx: any, next: any) {
-            try {
-              if (isGeneratorFunction(item)) {
-                return await co(item.apply(this, [ctx, next]));
-              } else {
-                return await item.apply(this, [ctx, next]);
-              }
-            } catch (error) {
-              typeInfo.onError(ctx, error);
-            }
-          };
-        });
-      };
-    });
-
     let value: any = routeFn;
-
     value = async function (this: any, ctx: Context) {
       // 'this' maybe is Controller or Context, in Chair.
       ctx = (this.request && this.response ? this : this.ctx) || ctx;
@@ -138,46 +104,6 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
 
     value.__name = key;
     typeInfo.call = () => value;
-
-    routes.push({
-      init: () => {
-        const ctrlMeta = getControllerMetadata(CtrlType);
-        const prefix = (ctrlMeta && ctrlMeta.prefix) ||
-          `/${typeGlobalName.split('_')[0].toLowerCase().replace('controller', '')}`;
-
-        /** complete path & method info */
-        const parsedPath = getNameAndMethod(typeInfo.functionName);
-        if (!typeInfo.url) {
-          typeInfo.url = `${prefix}/${parsedPath.name}`;
-        } else if (typeof typeInfo.url === 'string') {
-          const methodAndPath = typeInfo.url.split(/\s+/).map(s => s.trim());
-          if (
-            methodAndPath.length > 1 &&
-            ['get', 'put', 'post', 'delete', 'patch'].indexOf(methodAndPath[0].toLowerCase()) >= 0
-          ) {
-            typeInfo.method = [...new Set([]
-              .concat(methodAndPath[0] || [])
-              .concat(typeInfo.method || []))
-            ];
-            typeInfo.url = methodAndPath[1];
-          }
-        }
-        if (!typeInfo.method) {
-          typeInfo.method = parsedPath.method;
-        }
-
-        return typeInfo;
-      }
-    });
+    getControllerMetadata(CtrlType).routes.push(typeInfo);
   };
-}
-
-/** 路由列表 */
-export function getRoutes<ExtType = any>() {
-  routes.forEach(r => {
-    if (!r.value) {
-      r.value = r.init();
-    }
-  });
-  return routes.map(r => r.value) as RouteType<ExtType>[];
 }

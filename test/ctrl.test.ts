@@ -17,8 +17,16 @@ describe('ctrl', () => {
 
   it('normal', () => {
     return request(app.callback())
-      .get('/api/ctrl/hi')
-      .expect('hi, egg')
+      .get('/api/ctrl/hi?type=normal')
+      .expect('normal')
       .expect(200);
   });
+
+  it('middleware', () => {
+    return request(app.callback())
+      .get('/api/ctrl/hi?type=mw')
+      .expect('ctrl:middleware')
+      .expect(200);
+  });
+
 });

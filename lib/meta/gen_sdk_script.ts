@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { genAPISDK, RouteMetadataType } from 'api-gensdk';
-import { getRoutes } from '../route';
+import { getRoutes } from '../controller';
 import { getGlobalType } from 'power-di/utils';
+import { loadFile } from '../util';
 
 function getType(data: { type: string, itemType?: string, values?: string[] }): string {
   switch (data && data.type) {
@@ -40,7 +41,7 @@ process.on('message', (message: {
 }) => {
   try {
     const { targetSDKDir, files, templatePath, filter, type } = message;
-    files.forEach(file => require(file));
+    files.forEach(file => loadFile(file));
     genAPISDK(
       getRoutes().filter(route => {
         return filter.some(r => {

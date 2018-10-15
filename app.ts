@@ -10,7 +10,7 @@ export default (app: Application) => {
   if (config.autoLoad) {
     [].concat(config.ctrlDir)
       .map(dir => path.isAbsolute(dir) ? dir : path.join(app.baseDir, dir))
-      .forEach(dir => fs.existsSync(dir) && loadDir(dir).forEach(file => require(file)));
+      .forEach(dir => fs.existsSync(dir) && loadDir(dir));
   }
 
   app.beforeStart(() => {
