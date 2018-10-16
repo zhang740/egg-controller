@@ -1,4 +1,10 @@
 
+0.2.10 / 2018-10-16
+==================
+
+  * test: add open api test.
+  * feat: OpenAPI data add operationId.
+
 0.2.9 / 2018-10-15
 ==================
 
