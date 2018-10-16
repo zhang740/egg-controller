@@ -548,6 +548,32 @@
         }
       }
     },
+    "/sort/*": {
+      "get": {
+        "operationId": "sort",
+        "tags": [
+          "SortController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/sort/abc": {
+      "get": {
+        "operationId": "sort2",
+        "tags": [
+          "SortController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
     "/api/validate/p1": {
       "post": {
         "operationId": "p1",
@@ -622,6 +648,9 @@
     },
     {
       "name": "RouteController"
+    },
+    {
+      "name": "SortController"
     },
     {
       "name": "ParamController"
