@@ -28,7 +28,9 @@ export function convertToOpenAPI(info: {
           const ctrlMeta = getControllerMetadata(item.typeClass);
           tags.push({
             name: item.typeGlobalName,
-            description: ctrlMeta && `${ctrlMeta.name || ''} ${ctrlMeta.description || ''}`,
+            description: ctrlMeta && [
+              ctrlMeta.name, ctrlMeta.description
+            ].filter(s => s).join(' ') || undefined,
           });
         }
         if (!paths[url]) {
@@ -68,6 +70,7 @@ export function convertToOpenAPI(info: {
           };
 
           paths[url][method] = {
+            operationId: item.functionName,
             tags: [item.typeGlobalName],
             summary: item.name,
             description: item.description,
