@@ -1,0 +1,634 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "example",
+    "version": "0.0.0",
+    "contact": {}
+  },
+  "paths": {
+    "/api/ctrl/hi": {
+      "get": {
+        "operationId": "hi",
+        "tags": [
+          "CtrlController"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/encrypt/a": {
+      "post": {
+        "operationId": "a1",
+        "tags": [
+          "EncryptController"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/from/query": {
+      "post": {
+        "operationId": "a1",
+        "tags": [
+          "FromController"
+        ],
+        "parameters": [
+          {
+            "name": "a",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/from/body": {
+      "post": {
+        "operationId": "a2",
+        "tags": [
+          "FromController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/from/param/:a": {
+      "post": {
+        "operationId": "a3",
+        "tags": [
+          "FromController"
+        ],
+        "parameters": [
+          {
+            "name": "a",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "hi",
+        "tags": [
+          "IndexController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/amw": {
+      "get": {
+        "operationId": "amw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "async function & middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/agmw": {
+      "get": {
+        "operationId": "agmw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "async function & gen middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/gamw": {
+      "get": {
+        "operationId": "gamw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "gen function & async middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/ggmw": {
+      "get": {
+        "operationId": "ggmw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "gen function & middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/multi": {
+      "get": {
+        "operationId": "multi",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "async function & middleware",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest": {
+      "get": {
+        "operationId": "index",
+        "tags": [
+          "RESTSimpleController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2/custom": {
+      "get": {
+        "operationId": "index",
+        "tags": [
+          "RESTFullController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2": {
+      "post": {
+        "operationId": "create",
+        "tags": [
+          "RESTFullController"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2/new": {
+      "get": {
+        "operationId": "new",
+        "tags": [
+          "RESTFullController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2/:id": {
+      "get": {
+        "operationId": "show",
+        "tags": [
+          "RESTFullController"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      },
+      "put": {
+        "operationId": "update",
+        "tags": [
+          "RESTFullController"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "destroy",
+        "tags": [
+          "RESTFullController"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2/:id/edit": {
+      "get": {
+        "operationId": "edit",
+        "tags": [
+          "RESTFullController"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/index": {
+      "get": {
+        "operationId": "index",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "首页",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/sort": {
+      "get": {
+        "operationId": "sort",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "简写",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/post": {
+      "post": {
+        "operationId": "postData",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "param": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/put": {
+      "put": {
+        "operationId": "put",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/route/default": {
+      "get": {
+        "operationId": "default",
+        "tags": [
+          "RouteController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/nodata": {
+      "get": {
+        "operationId": "noData",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "无数据",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/notfound": {
+      "get": {
+        "operationId": "notFound",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "404",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/unittest": {
+      "get": {
+        "operationId": "customByconfig",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "根据config生成url（此类型暂不支持生成到前端SDK）",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/getArray": {
+      "get": {
+        "operationId": "getArray",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "array",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/validate/p1": {
+      "post": {
+        "operationId": "p1",
+        "tags": [
+          "ParamController"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/noChangeBody": {
+      "get": {
+        "operationId": "hi",
+        "tags": [
+          "HomeController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "responses": {},
+    "parameters": {},
+    "examples": {},
+    "requestBodies": {},
+    "headers": {},
+    "securitySchemes": {},
+    "links": {},
+    "callbacks": {}
+  },
+  "tags": [
+    {
+      "name": "CtrlController",
+      "description": "Test for @controller"
+    },
+    {
+      "name": "EncryptController"
+    },
+    {
+      "name": "FromController"
+    },
+    {
+      "name": "IndexController"
+    },
+    {
+      "name": "MiddlewareController"
+    },
+    {
+      "name": "RESTSimpleController",
+      "description": "Test rest for @controller"
+    },
+    {
+      "name": "RESTFullController",
+      "description": "Test rest for @controller"
+    },
+    {
+      "name": "RouteController"
+    },
+    {
+      "name": "ParamController"
+    },
+    {
+      "name": "HomeController"
+    }
+  ],
+  "servers": []
+}
