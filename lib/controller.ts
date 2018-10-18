@@ -54,7 +54,7 @@ export function controller(meta: ControllerMetadataType = {}) {
   };
 }
 
-function initController(target: any, app: Application) {
+function initController(target: any, app?: Application) {
   const typeGlobalName = getGlobalType(target);
   const metadata = getControllerMetadata(target);
   if (metadata.init) {
@@ -139,7 +139,6 @@ function initController(target: any, app: Application) {
     }
 
     if (app) {
-      // can't get params in url, when url is array. (chair? egg? koa?)
       route.url = typeof route.url === 'function' ? route.url(app) : route.url;
     }
 

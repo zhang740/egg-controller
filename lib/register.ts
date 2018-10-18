@@ -14,6 +14,8 @@ export function registerRoute(app: Application) {
       }).forEach(route => {
         const routeData: any[] = routeDatas[route.typeGlobalName] = routeDatas[route.typeGlobalName] || [];
 
+        route.url = typeof route.url === 'function' ? route.url(app) : route.url;
+        // can't get params in url, when url is array. (chair? egg? koa?)
         [].concat(route.url)
           .forEach(url => {
             const methods = [].concat(route.method || 'all');

@@ -29,4 +29,11 @@ describe('base', () => {
       .expect(200);
   });
 
+  it('pathParamTest', () => {
+    return request(app.callback())
+      .get('/funcPath/example')
+      .expect('ok')
+      .expect(200);
+  });
+
 });

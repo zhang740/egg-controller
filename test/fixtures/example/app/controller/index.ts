@@ -11,4 +11,9 @@ export class IndexController extends Controller {
   paramInPath() {
     return arguments[0];
   }
+
+  @route({ url: (app) => `/funcPath/${app.config.name}` })
+  funcPath() {
+    return 'ok';
+  }
 }
