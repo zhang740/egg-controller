@@ -131,6 +131,19 @@
         }
       }
     },
+    "/funcPath/example": {
+      "get": {
+        "operationId": "funcPath",
+        "tags": [
+          "IndexController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "operationId": "hi",
