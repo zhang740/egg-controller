@@ -72,19 +72,6 @@
         }
       }
     },
-    "/from/body": {
-      "post": {
-        "operationId": "a2",
-        "tags": [
-          "FromController"
-        ],
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
     "/from/param/:a": {
       "post": {
         "operationId": "a3",
@@ -108,11 +95,107 @@
         }
       }
     },
+    "/from/body": {
+      "post": {
+        "operationId": "a2",
+        "tags": [
+          "FromController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/pathParamTest/:paramName": {
+      "get": {
+        "operationId": "paramInPath",
+        "tags": [
+          "IndexController"
+        ],
+        "parameters": [
+          {
+            "name": "paramName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "operationId": "hi",
         "tags": [
           "IndexController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/multi": {
+      "get": {
+        "operationId": "multi",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "async function & middleware",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/ggmw": {
+      "get": {
+        "operationId": "ggmw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "gen function & middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/mw/gamw": {
+      "get": {
+        "operationId": "gamw",
+        "tags": [
+          "MiddlewareController"
+        ],
+        "summary": "gen function & async middleware",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "default": {
@@ -167,71 +250,24 @@
         }
       }
     },
-    "/mw/gamw": {
-      "get": {
-        "operationId": "gamw",
-        "tags": [
-          "MiddlewareController"
-        ],
-        "summary": "gen function & async middleware",
-        "parameters": [
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
-    "/mw/ggmw": {
-      "get": {
-        "operationId": "ggmw",
-        "tags": [
-          "MiddlewareController"
-        ],
-        "summary": "gen function & middleware",
-        "parameters": [
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
-    "/mw/multi": {
-      "get": {
-        "operationId": "multi",
-        "tags": [
-          "MiddlewareController"
-        ],
-        "summary": "async function & middleware",
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
     "/api/rest": {
       "get": {
         "operationId": "index",
         "tags": [
           "RESTSimpleController"
+        ],
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/api/rest2/new": {
+      "get": {
+        "operationId": "new",
+        "tags": [
+          "RESTFullController"
         ],
         "responses": {
           "default": {
@@ -253,33 +289,21 @@
         }
       }
     },
-    "/api/rest2": {
-      "post": {
-        "operationId": "create",
+    "/api/rest2/:id/edit": {
+      "get": {
+        "operationId": "edit",
         "tags": [
           "RESTFullController"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {}
-              }
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "object"
             }
           }
-        },
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
-    "/api/rest2/new": {
-      "get": {
-        "operationId": "new",
-        "tags": [
-          "RESTFullController"
         ],
         "responses": {
           "default": {
@@ -289,8 +313,8 @@
       }
     },
     "/api/rest2/:id": {
-      "get": {
-        "operationId": "show",
+      "delete": {
+        "operationId": "destroy",
         "tags": [
           "RESTFullController"
         ],
@@ -340,8 +364,8 @@
           }
         }
       },
-      "delete": {
-        "operationId": "destroy",
+      "get": {
+        "operationId": "show",
         "tags": [
           "RESTFullController"
         ],
@@ -362,22 +386,21 @@
         }
       }
     },
-    "/api/rest2/:id/edit": {
-      "get": {
-        "operationId": "edit",
+    "/api/rest2": {
+      "post": {
+        "operationId": "create",
         "tags": [
           "RESTFullController"
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "object"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {}
+              }
             }
           }
-        ],
+        },
         "responses": {
           "default": {
             "description": "default"
@@ -385,13 +408,26 @@
         }
       }
     },
-    "/home/index": {
+    "/route/default": {
       "get": {
-        "operationId": "index",
+        "operationId": "default",
         "tags": [
           "RouteController"
         ],
-        "summary": "首页",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/unittest": {
+      "get": {
+        "operationId": "customByconfig",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "根据config生成url（此类型暂不支持生成到前端SDK）",
         "responses": {
           "default": {
             "description": "default"
@@ -406,33 +442,6 @@
           "RouteController"
         ],
         "summary": "简写",
-        "responses": {
-          "default": {
-            "description": "default"
-          }
-        }
-      }
-    },
-    "/home/post": {
-      "post": {
-        "operationId": "postData",
-        "tags": [
-          "RouteController"
-        ],
-        "summary": "post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "param": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "default": {
             "description": "default"
@@ -467,26 +476,26 @@
         }
       }
     },
-    "/route/default": {
-      "get": {
-        "operationId": "default",
+    "/home/post": {
+      "post": {
+        "operationId": "postData",
         "tags": [
           "RouteController"
         ],
-        "responses": {
-          "default": {
-            "description": "default"
+        "summary": "post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "param": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
           }
-        }
-      }
-    },
-    "/home/nodata": {
-      "get": {
-        "operationId": "noData",
-        "tags": [
-          "RouteController"
-        ],
-        "summary": "无数据",
+        },
         "responses": {
           "default": {
             "description": "default"
@@ -508,13 +517,27 @@
         }
       }
     },
-    "/home/unittest": {
+    "/home/nodata": {
       "get": {
-        "operationId": "customByconfig",
+        "operationId": "noData",
         "tags": [
           "RouteController"
         ],
-        "summary": "根据config生成url（此类型暂不支持生成到前端SDK）",
+        "summary": "无数据",
+        "responses": {
+          "default": {
+            "description": "default"
+          }
+        }
+      }
+    },
+    "/home/index": {
+      "get": {
+        "operationId": "index",
+        "tags": [
+          "RouteController"
+        ],
+        "summary": "首页",
         "responses": {
           "default": {
             "description": "default"
@@ -548,9 +571,9 @@
         }
       }
     },
-    "/sort/*": {
+    "/sort/abc": {
       "get": {
-        "operationId": "sort",
+        "operationId": "sort2",
         "tags": [
           "SortController"
         ],
@@ -561,9 +584,9 @@
         }
       }
     },
-    "/sort/abc": {
+    "/sort/*": {
       "get": {
-        "operationId": "sort2",
+        "operationId": "sort",
         "tags": [
           "SortController"
         ],

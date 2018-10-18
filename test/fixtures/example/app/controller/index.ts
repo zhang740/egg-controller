@@ -6,4 +6,9 @@ export class IndexController extends Controller {
   hi() {
     return `hi, egg`;
   }
+
+  @route('/pathParamTest/:paramName')
+  paramInPath() {
+    return arguments[0];
+  }
 }

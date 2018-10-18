@@ -57,7 +57,7 @@ export function convertToOpenAPI(info: {
             .forEach(p => {
               const type = getValue(() => p.validateType.type, getGlobalType(p.type)).toLowerCase();
               const props = (inBody.schema as SchemaObject).properties;
-              props[p.paramName || p.name] = {
+              props[p.paramName] = {
                 type,
                 items: type === 'array' ? {
                   type: getValue(() => p.validateType.itemType, 'object'),
@@ -80,7 +80,7 @@ export function convertToOpenAPI(info: {
                 p.source === 'Param' ? 'path' :
                   'query';
               return {
-                name: p.paramName || p.name,
+                name: p.paramName,
                 in: source,
                 required: source === 'path' || getValue(() => p.validateType.required),
                 schema: {

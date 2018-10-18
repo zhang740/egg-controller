@@ -7,17 +7,14 @@ import * as request from 'request';
 
 export function registerRoute(app: Application) {
   const routeDatas: any = {};
-  getControllers()
+  getControllers(app)
     .forEach(ctrl => {
       ctrl.routes.sort((a, b) => {
         return a.url > b.url ? -1 : 1;
       }).forEach(route => {
         const routeData: any[] = routeDatas[route.typeGlobalName] = routeDatas[route.typeGlobalName] || [];
 
-        // can't get params in url, when url is array. (chair? egg? koa?)
-        const finalUrl = typeof route.url === 'function' ? route.url(app) : route.url;
-        route.url = finalUrl;
-        [].concat(finalUrl)
+        [].concat(route.url)
           .forEach(url => {
             const methods = [].concat(route.method || 'all');
             (app as any).register(

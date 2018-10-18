@@ -21,4 +21,12 @@ describe('base', () => {
       .expect('hi, egg')
       .expect(200);
   });
+
+  it('pathParamTest', () => {
+    return request(app.callback())
+      .get('/pathParamTest/aaa')
+      .expect('aaa')
+      .expect(200);
+  });
+
 });

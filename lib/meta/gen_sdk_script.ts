@@ -73,7 +73,7 @@ process.on('message', (message: {
             let type = pt.validateType ?
               getType(pt.validateType) :
               getType({ type: getGlobalType(pt.type).toLowerCase() });
-            return { name: pt.name, paramName: pt.paramName || pt.name, type };
+            return { name: pt.name, paramName: pt.paramName, type };
           }),
         } as RouteMetadataType;
       }),

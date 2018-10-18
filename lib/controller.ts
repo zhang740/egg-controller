@@ -1,5 +1,5 @@
 import * as co from 'co';
-import { Controller } from 'egg';
+import { Controller, Application } from 'egg';
 import { getGlobalType } from 'power-di/utils';
 import { ControllerMetadataType, ControllerType, RouteType, MiddlewareType, MethodType } from './type';
 import { isGeneratorFunction, getNameAndMethod, getCurrentLoadFilePath } from './util';
@@ -8,15 +8,15 @@ import { route } from './route';
 const CtrlMetaSymbol = Symbol('CtrlMetaSymbol');
 const controllers: ControllerType[] = [];
 /** 控制器列表 */
-export function getControllers() {
+export function getControllers(app?: Application) {
   controllers
     .filter(info => !info.init)
-    .forEach(info => initController(info.classType));
+    .forEach(info => initController(info.classType, app));
   return controllers;
 }
 /** 路由列表 */
-export function getRoutes<ExtType = any>(): RouteType<ExtType>[] {
-  return getControllers().map(ctrl => ctrl.routes)
+export function getRoutes<ExtType = any>(app?: Application): RouteType<ExtType>[] {
+  return getControllers(app).map(ctrl => ctrl.routes)
     .reduce((pv, cv) => pv.concat(cv), []);
 }
 
@@ -51,11 +51,10 @@ export function controller(meta: ControllerMetadataType = {}) {
   return (target) => {
     const metadata = getControllerMetadata(target);
     Object.assign(metadata, meta);
-    initController(target);
   };
 }
 
-function initController(target: any) {
+function initController(target: any, app: Application) {
   const typeGlobalName = getGlobalType(target);
   const metadata = getControllerMetadata(target);
   if (metadata.init) {
@@ -138,6 +137,32 @@ function initController(target: any) {
     if (!route.method) {
       route.method = parsedPath.method;
     }
+
+    if (app) {
+      // can't get params in url, when url is array. (chair? egg? koa?)
+      route.url = typeof route.url === 'function' ? route.url(app) : route.url;
+    }
+
+    // parse params in path
+    [].concat(route.url)
+      .forEach(url => {
+        if (typeof url === 'string') {
+          url.split('/').forEach(item => {
+            if (item.startsWith(':')) {
+              const paramName = item.substr(1);
+              if (route.paramTypes.every(pt => pt.paramName !== paramName)) {
+                route.paramTypes.push({
+                  name: paramName,
+                  paramName: paramName,
+                  type: String,
+                  source: 'Param',
+                  validateType: undefined,
+                });
+              }
+            }
+          });
+        }
+      });
   });
 }
 

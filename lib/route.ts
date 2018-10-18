@@ -54,7 +54,7 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       typeInfo.paramTypes.push({
         name,
         type: paramTypes[i] === undefined ? Object : paramTypes[i],
-        paramName: config.paramName,
+        paramName: config.paramName || name,
         getter: methodRules.param[i],
         source: config.source || (paths && paths.some(p => p === `:${config.paramName || name}`) ? 'Param' : 'Any'),
         hidden: config.hidden,
