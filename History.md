@@ -1,4 +1,10 @@
 
+0.3.1 / 2018-11-14
+==================
+
+  * fix: not remove file when watch file change.
+  * feat: support openapi-generator hook.
+
 0.3.0 / 2018-11-14
 ==================
 
