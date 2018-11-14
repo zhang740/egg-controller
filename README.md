@@ -201,14 +201,10 @@ export class HomeController {
     genSDK: {
       /* 是否开启，默认关闭 */
       enable: false,
-      /* 生成SDK的文件类型，默认 ts */
-      type: 'ts' as 'ts' | 'js',
-      /* 前端SDK的生成路径 */
-      SDKDir: path.join('app', 'assets', 'service'),
-      /* 生成模板路径，如没有模板文件，会默认在前端SDK路径下生成默认模板 */
-      templatePath: '',
       /* 针对需要生成SDK的路由的过滤正则，可针对路由url过滤 */
       filter: [/^\/api\//g] as RegExp[],
+
+      // 其余继承自 https://github.com/zhang740/openapi-generator
     },
     /** api 信息上报 */
     apiReport: {

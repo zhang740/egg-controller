@@ -3,14 +3,13 @@
 import * as path from 'path';
 import { fork } from 'child_process';
 import { getDirFiles } from '../util';
+import { CliConfig } from 'openapi-generator';
 
 /** 根据路径生成APISDK */
 export async function genAPISDKByPath(
   ctrlDir: string | string[],
-  targetSDKDir: string,
-  templatePath?: string,
-  type = 'js',
   filter = [/^\/api\//g],
+  config: CliConfig,
 ) {
   return new Promise((resolve, _reject) => {
     const files: string[] = [];
@@ -24,9 +23,8 @@ export async function genAPISDKByPath(
     } as any);
     p.on('message', (_data) => {
       p.send({
-        targetSDKDir, files,
-        templatePath: templatePath,
-        type,
+        files,
+        config,
         filter: filter.map(f => f.toString()),
       });
     });

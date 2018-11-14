@@ -72,7 +72,7 @@
         }
       }
     },
-    "/from/param/:a": {
+    "/from/param/{a}": {
       "post": {
         "operationId": "a3",
         "tags": [
@@ -108,7 +108,7 @@
         }
       }
     },
-    "/pathParamTest/:paramName": {
+    "/pathParamTest/{paramName}": {
       "get": {
         "operationId": "paramInPath",
         "tags": [
@@ -302,7 +302,7 @@
         }
       }
     },
-    "/api/rest2/:id/edit": {
+    "/api/rest2/{id}/edit": {
       "get": {
         "operationId": "edit",
         "tags": [
@@ -325,7 +325,7 @@
         }
       }
     },
-    "/api/rest2/:id": {
+    "/api/rest2/{id}": {
       "delete": {
         "operationId": "destroy",
         "tags": [

@@ -24,6 +24,8 @@ export function convertToOpenAPI(info: {
   data.forEach(item => {
     [].concat(item.url).forEach(url => {
       if (typeof url === 'string') {
+        url = url.split('/').map((item: string) => item.startsWith(':') ? `{${item.substr(1)}}` : item).join('/');
+
         if (!tags.find(t => t.name === item.typeGlobalName)) {
           const ctrlMeta = getControllerMetadata(item.typeClass);
           tags.push({

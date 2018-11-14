@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { CliConfig } from 'openapi-generator';
 
 export default {
   controller: {
@@ -11,15 +12,13 @@ export default {
     /** generate frontend request sdk */
     genSDK: {
       enable: false,
-      /** generate code type, support ts/js */
-      type: 'ts' as 'ts' | 'js',
-      /** generate code dir path */
-      SDKDir: path.join('app', 'assets', 'service'),
-      /** generate template */
-      templatePath: '',
+      sdkDir: path.join('app', 'assets', 'service'),
       /** route filter for generate, default: ^\/api\/ */
-      filter: [/^\/api\//g] as RegExp[],
-    },
+      filter: [/^\/api\//g],
+      type: 'ts',
+      serviceType: 'class',
+      camelCase: true,
+    } as { enable: boolean, filter?: RegExp[] } & CliConfig,
     /** api info report */
     apiReport: {
       enable: false,
