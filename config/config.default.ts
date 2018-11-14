@@ -18,6 +18,9 @@ export default {
       type: 'ts',
       serviceType: 'class',
       camelCase: true,
+      hook: {
+        customClassName: name => name.replace('Controller', 'Service'),
+      },
     } as { enable: boolean, filter?: RegExp[] } & CliConfig,
     /** api info report */
     apiReport: {

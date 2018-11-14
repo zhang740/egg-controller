@@ -17,6 +17,14 @@ export async function genAPISDKByPath(
       files.push(...getDirFiles(dir));
     });
 
+    if (config.hook) {
+      Object.keys(config.hook).forEach(key => {
+        if (typeof config.hook[key] === 'function') {
+          config.hook[key] = config.hook[key].toString();
+        }
+      });
+    }
+
     const p = fork(path.join(__dirname, 'gen_sdk_script.js'), null, {
       stdio: 'inherit',
       encoding: 'utf8',

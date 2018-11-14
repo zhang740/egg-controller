@@ -8,6 +8,15 @@ process.on('message', (message: {
 }) => {
   try {
     const { files, filter, config } = message;
+
+    if (config.hook) {
+      Object.keys(config.hook).forEach(key => {
+        if (typeof config.hook[key] === 'string') {
+          config.hook[key] = new Function(`return ${config.hook[key]}`)();
+        }
+      });
+    }
+
     files.forEach(file => loadFile(file));
     const openAPIData = convertToOpenAPI({
       base: { version: '1.0', title: '' }
