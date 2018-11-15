@@ -12,7 +12,7 @@ export class IndexController extends Controller {
     return arguments[0];
   }
 
-  @route({ url: (app) => `/funcPath/${app.config.name}` })
+  @route({ url: (config) => `/funcPath/${config.name}` })
   funcPath() {
     return 'ok';
   }

@@ -2,6 +2,7 @@ import { Application, Context } from 'egg';
 import { MethodType } from './util';
 export { MethodType };
 import { ParamInfoType } from './param';
+import { SchemaObject } from 'openapi3-ts';
 
 /** 路由注解元信息 */
 export interface RouteMetadataType<ExtType = any> {
@@ -10,7 +11,7 @@ export interface RouteMetadataType<ExtType = any> {
   /** http method */
   method?: MethodType | MethodType[];
   /** http path */
-  url?: string | RegExp | string[] | RegExp[] | ((app: Application) => string);
+  url?: string | RegExp | string[] | RegExp[] | ((appConfig: any) => string);
   /** router description */
   description?: string;
   /** before middleware of router */
@@ -19,7 +20,10 @@ export interface RouteMetadataType<ExtType = any> {
   extInfo?: ExtType;
   /** callback of the router function throw error */
   onError?: (ctx: Context, error: Error) => void;
-  /** param valid metadata */
+  /**
+   * @deprecated
+   * param valid metadata
+   * */
   validateMetaInfo?: {
     name: string;
     rule: {
@@ -29,6 +33,8 @@ export interface RouteMetadataType<ExtType = any> {
       [other: string]: any;
     }
   }[];
+  /** param schema */
+  paramSchema?: { [name: string]: SchemaObject };
   /** RSA encrypt */
   encrypt?: boolean;
 

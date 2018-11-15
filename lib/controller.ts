@@ -1,5 +1,5 @@
 import * as co from 'co';
-import { Controller, Application } from 'egg';
+import { Controller, Application, EggAppConfig } from 'egg';
 import { getGlobalType } from 'power-di/utils';
 import { ControllerMetadataType, ControllerType, RouteType, MiddlewareType, MethodType } from './type';
 import { isGeneratorFunction, getNameAndMethod, getCurrentLoadFilePath } from './util';
@@ -8,15 +8,15 @@ import { route } from './route';
 const CtrlMetaSymbol = Symbol('CtrlMetaSymbol');
 const controllers: ControllerType[] = [];
 /** 控制器列表 */
-export function getControllers(app?: Application) {
+export function getControllers(config: EggAppConfig) {
   controllers
     .filter(info => !info.init)
-    .forEach(info => initController(info.classType, app));
+    .forEach(info => initController(info.classType, config));
   return controllers;
 }
 /** 路由列表 */
-export function getRoutes<ExtType = any>(app?: Application): RouteType<ExtType>[] {
-  return getControllers(app).map(ctrl => ctrl.routes)
+export function getRoutes<ExtType = any>(config: EggAppConfig): RouteType<ExtType>[] {
+  return getControllers(config).map(ctrl => ctrl.routes)
     .reduce((pv, cv) => pv.concat(cv), []);
 }
 
@@ -54,7 +54,7 @@ export function controller(meta: ControllerMetadataType = {}) {
   };
 }
 
-function initController(target: any, app?: Application) {
+function initController(target: any, config?: EggAppConfig) {
   const typeGlobalName = getGlobalType(target);
   const metadata = getControllerMetadata(target);
   if (metadata.init) {
@@ -138,9 +138,10 @@ function initController(target: any, app?: Application) {
       route.method = parsedPath.method;
     }
 
-    if (app) {
-      route.url = typeof route.url === 'function' ? route.url(app) : route.url;
-    }
+    route.url = [].concat(route.url)
+      .map(url => {
+        return typeof url === 'function' ? url(config) : url;
+      });
 
     // parse params in path
     [].concat(route.url)
@@ -149,7 +150,10 @@ function initController(target: any, app?: Application) {
           url.split('/').forEach(item => {
             if (item.startsWith(':')) {
               const paramName = item.substr(1);
-              if (route.paramTypes.every(pt => pt.paramName !== paramName)) {
+              const paramType = route.paramTypes.find(pt => pt.paramName === paramName);
+              if (paramType) {
+                paramType.source = 'Param';
+              } else {
                 route.paramTypes.push({
                   name: paramName,
                   paramName: paramName,

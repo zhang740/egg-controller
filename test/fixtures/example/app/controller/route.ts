@@ -37,7 +37,7 @@ export class RouteController {
     throw new NotFoundError();
   }
 
-  @route({ url: (app) => `/home/${app.config.env}`, name: '根据config生成url（此类型暂不支持生成到前端SDK）' })
+  @route({ url: (config) => `/home/${config.env}`, name: '根据config生成url' })
   async customByconfig() {
     return 'customByconfig';
   }

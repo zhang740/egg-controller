@@ -16,14 +16,14 @@ export default (agent: Agent) => {
     rest.sdkDir = path.isAbsolute(rest.sdkDir) ? rest.sdkDir : path.join(agent.baseDir, rest.sdkDir);
 
     console.log('[egg-controller] gen api sdk.');
-    genAPISDKByPath(ctrlDir, filter, rest);
+    genAPISDKByPath(ctrlDir, filter, rest, agent.config);
 
     ctrlDir.forEach(dir => {
       (agent as any).watcher.watch(dir, (file: any) => {
         console.log('[egg-controller] file changed', file.path);
         genAPISDKByPath(file.path, filter, {
           ...rest, autoClear: false
-        });
+        }, agent.config);
       });
     });
   }

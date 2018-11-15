@@ -101,6 +101,15 @@
         "tags": [
           "FromController"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReqType_1"
+              }
+            }
+          }
+        },
         "responses": {
           "default": {
             "description": "default"
@@ -362,15 +371,6 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {}
-              }
-            }
-          }
-        },
         "responses": {
           "default": {
             "description": "default"
@@ -405,15 +405,6 @@
         "tags": [
           "RESTFullController"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {}
-              }
-            }
-          }
-        },
         "responses": {
           "default": {
             "description": "default"
@@ -440,7 +431,7 @@
         "tags": [
           "RouteController"
         ],
-        "summary": "根据config生成url（此类型暂不支持生成到前端SDK）",
+        "summary": "根据config生成url",
         "responses": {
           "default": {
             "description": "default"
@@ -473,11 +464,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "properties": {
-                  "id": {
-                    "type": "number"
-                  }
-                }
+                "$ref": "#/components/schemas/ReqType_2"
               }
             }
           }
@@ -500,11 +487,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "properties": {
-                  "param": {
-                    "type": "object"
-                  }
-                }
+                "$ref": "#/components/schemas/ReqType_3"
               }
             }
           }
@@ -621,7 +604,8 @@
             "name": "data",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maximum": 5
             }
           }
         ],
@@ -647,7 +631,32 @@
     }
   },
   "components": {
-    "schemas": {},
+    "schemas": {
+      "ReqType_1": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        }
+      },
+      "ReqType_2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          }
+        }
+      },
+      "ReqType_3": {
+        "type": "object",
+        "properties": {
+          "param": {
+            "type": "object"
+          }
+        }
+      }
+    },
     "responses": {},
     "parameters": {},
     "examples": {},

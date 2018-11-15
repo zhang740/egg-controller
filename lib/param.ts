@@ -4,6 +4,7 @@ import { getGlobalType } from 'power-di/utils';
 import { RouteType } from './type';
 import { getValue, formatKey } from './util';
 import { BadRequestError } from './error';
+import { SchemaObject } from 'openapi3-ts';
 export type ParamGetterType = (ctx: Context, name: string, type: any) => any;
 
 export type ParamSourceEnum = 'Any' | 'Query' | 'Body' | 'Param' | 'Header';
@@ -19,8 +20,13 @@ export interface ParamInfoType {
   /** 参数来源 */
   source: ParamSourceEnum;
   hidden?: boolean;
-  /** 增强参数类型，ts-metadata */
-  validateType: any;
+  /**
+   * @deprecated 使用 schema 替代
+   * 增强参数类型，ts-metadata
+   * */
+  validateType?: any;
+  /** 使用 OpenAPI JSON Schema 定义 */
+  schema?: SchemaObject;
 }
 
 const extRules: {

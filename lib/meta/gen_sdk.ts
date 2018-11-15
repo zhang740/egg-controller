@@ -4,12 +4,14 @@ import * as path from 'path';
 import { fork } from 'child_process';
 import { getDirFiles } from '../util';
 import { CliConfig } from 'openapi-generator';
+import { EggAppConfig } from 'egg';
 
 /** 根据路径生成APISDK */
 export async function genAPISDKByPath(
   ctrlDir: string | string[],
   filter = [/^\/api\//g],
   config: CliConfig,
+  appConfig: EggAppConfig,
 ) {
   return new Promise((resolve, _reject) => {
     const files: string[] = [];
@@ -34,6 +36,7 @@ export async function genAPISDKByPath(
         files,
         config,
         filter: filter.map(f => f.toString()),
+        appConfig,
       });
     });
     p.on('exit', () => {

@@ -1,11 +1,12 @@
 import {
   OpenApiBuilder, InfoObject, ContactObject, TagObject,
-  OperationObject, ResponsesObject, ParameterObject, MediaTypeObject, SchemaObject,
+  OperationObject, ResponsesObject, ParameterObject, MediaTypeObject, SchemaObject, OpenAPIObject, RequestBodyObject,
 } from 'openapi3-ts';
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from '../type';
 import { getValue } from '../util';
 import { getControllerMetadata } from '../controller';
+import { ParamInfoType } from '../param';
 
 /** convert routeData to OpenAPI(3.x) json schema */
 export function convertToOpenAPI(info: {
@@ -21,94 +22,144 @@ export function convertToOpenAPI(info: {
 
   const tags: TagObject[] = [];
   const paths: { [path: string]: { [method: string]: OperationObject } } = {};
+  let typeCount = 1;
+
   data.forEach(item => {
     [].concat(item.url).forEach(url => {
-      if (typeof url === 'string') {
-        url = url.split('/').map((item: string) => item.startsWith(':') ? `{${item.substr(1)}}` : item).join('/');
+      if (typeof url !== 'string') {
+        // TODO
+        return;
+      }
 
-        if (!tags.find(t => t.name === item.typeGlobalName)) {
-          const ctrlMeta = getControllerMetadata(item.typeClass);
-          tags.push({
-            name: item.typeGlobalName,
-            description: ctrlMeta && [
-              ctrlMeta.name, ctrlMeta.description
-            ].filter(s => s).join(' ') || undefined,
-          });
+      url = url.split('/').map((item: string) => item.startsWith(':') ? `{${item.substr(1)}}` : item).join('/');
+
+      if (!tags.find(t => t.name === item.typeGlobalName)) {
+        const ctrlMeta = getControllerMetadata(item.typeClass);
+        tags.push({
+          name: item.typeGlobalName,
+          description: ctrlMeta && [
+            ctrlMeta.name, ctrlMeta.description
+          ].filter(s => s).join(' ') || undefined,
+        });
+      }
+      if (!paths[url]) {
+        paths[url] = {};
+      }
+      [].concat(item.method).forEach((method: string) => {
+        method = method.toLowerCase();
+
+        function paramFilter(p: ParamInfoType) {
+          if (p.source === 'Any') {
+            return ['post', 'put'].every(m => m !== item.method);
+          }
+          return p.source !== 'Body';
         }
-        if (!paths[url]) {
-          paths[url] = {};
-        }
-        [].concat(item.method).forEach((method: string) => {
-          method = method.toLowerCase();
 
-          const hasBody = ['post', 'put'].some(m => m === item.method);
-          const paramFilter = p => {
-            if (p.source === 'Any') {
-              return !hasBody;
-            }
-            return p.source !== 'Body';
-          };
-
-          const inParam = item.paramTypes.filter(paramFilter);
-          const inBody: MediaTypeObject = {
-            schema: {
-              properties: {},
-            },
-          };
-          item.paramTypes.filter(p => !paramFilter(p))
-            .forEach(p => {
-              const type = getValue(() => p.validateType.type, getGlobalType(p.type)).toLowerCase();
-              const props = (inBody.schema as SchemaObject).properties;
-              props[p.paramName] = {
-                type,
-                items: type === 'array' ? {
-                  type: getValue(() => p.validateType.itemType, 'object'),
-                } : undefined,
-              };
+        function convertValidateToSchema(validateType: any) {
+          if (validateType.type === 'object' && validateType.rule) {
+            let properties: any = {};
+            Object.keys(validateType.rule).forEach(key => {
+              properties[key] = convertValidateToSchema(validateType.rule[key]);
             });
 
-          const responses: ResponsesObject = {
-            default: { description: 'default' }
-          };
+            const typeName = `GenType_${typeCount++}`;
+            builder.addSchema(typeName, {
+              type: validateType.type,
+              required: validateType.required,
+              properties,
+            });
+            return {
+              $ref: `#/components/schemas/${typeName}`
+            };
+          }
 
-          paths[url][method] = {
-            operationId: item.functionName,
-            tags: [item.typeGlobalName],
-            summary: item.name,
-            description: item.description,
-            parameters: inParam.length ? inParam.map(p => {
-              const type = getValue(() => p.validateType.type, getGlobalType(p.type)).toLowerCase();
-              const source = p.source === 'Header' ? 'header' :
-                p.source === 'Param' ? 'path' :
-                  'query';
-              return {
-                name: p.paramName,
-                in: source,
-                required: source === 'path' || getValue(() => p.validateType.required),
-                schema: {
-                  type: ['array', 'boolean', 'integer', 'number', 'object', 'string']
-                    .some(t => t === type) ? type : 'object',
-                  items: type === 'array' ? {
-                    type: getValue(() => p.validateType.itemType, 'object'),
-                  } : undefined,
-                },
-              } as ParameterObject;
-            }) : undefined,
-            requestBody: hasBody ? {
-              content: {
-                'application/json': inBody,
-              },
+          return {
+            type: validateType.type,
+            required: validateType.required,
+            items: validateType.itemType ? {
+              type: validateType.itemType,
             } : undefined,
-            responses,
+            maximum: validateType.max,
+            minimum: validateType.min,
+          } as SchemaObject;
+        }
+        function getTypeSchema(p: ParamInfoType) {
+          if (p.schema) {
+            return p.schema;
+          } else if (p.validateType && p.validateType.type) {
+            return convertValidateToSchema(p.validateType);
+          } else {
+            const type = getGlobalType(p.type);
+            const isSimpleType = ['array', 'boolean', 'integer', 'number', 'object', 'string']
+              .some(t => t === type.toLowerCase());
+            // TODO complex type process
+            return {
+              type: isSimpleType ? type.toLowerCase() : 'object',
+              items: type === 'Array' ? {
+                type: 'object',
+              } : undefined,
+            } as SchemaObject;
+          }
+        }
+
+        // param
+        const inParam = item.paramTypes.filter(paramFilter);
+
+        // req body
+        const inBody = item.paramTypes.filter(p => !paramFilter(p));
+        let requestBody: RequestBodyObject;
+        if (inBody.length) {
+          const requestBodySchema: SchemaObject = {
+            type: 'object',
+            properties: {},
           };
-        });
-      } else {
-        // TODO
-      }
+          inBody.forEach(p => {
+            requestBodySchema.properties[p.paramName] = getTypeSchema(p);
+          });
+          const reqBodyTypeName = `ReqType_${typeCount++}`;
+          builder.addSchema(reqBodyTypeName, requestBodySchema);
+
+          const reqMediaType = 'application/json';
+          requestBody = {
+            content: {
+              [reqMediaType]: {
+                schema: {
+                  $ref: `#/components/schemas/${reqBodyTypeName}`
+                }
+              }
+            }
+          };
+        }
+
+        // res
+        const responses: ResponsesObject = {
+          default: { description: 'default' }
+        };
+
+        paths[url][method] = {
+          operationId: item.functionName,
+          tags: [item.typeGlobalName],
+          summary: item.name,
+          description: item.description,
+          parameters: inParam.length ? inParam.map(p => {
+            const source = p.source === 'Header' ? 'header' :
+              p.source === 'Param' ? 'path' :
+                'query';
+            return {
+              name: p.paramName,
+              in: source,
+              required: source === 'path' || getValue(() => p.validateType.required),
+              schema: getTypeSchema(p),
+            } as ParameterObject;
+          }) : undefined,
+          requestBody,
+          responses,
+        };
+      });
     });
   });
 
   tags.forEach(tag => builder.addTag(tag));
   Object.keys(paths).forEach(path => builder.addPath(path, paths[path]));
-  return JSON.parse(builder.getSpecAsJson());
+  return JSON.parse(builder.getSpecAsJson()) as OpenAPIObject;
 }

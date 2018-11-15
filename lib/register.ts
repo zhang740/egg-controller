@@ -7,15 +7,13 @@ import * as request from 'request';
 
 export function registerRoute(app: Application) {
   const routeDatas: any = {};
-  getControllers(app)
+  getControllers(app.config)
     .forEach(ctrl => {
       ctrl.routes.sort((a, b) => {
         return a.url > b.url ? -1 : 1;
       }).forEach(route => {
         const routeData: any[] = routeDatas[route.typeGlobalName] = routeDatas[route.typeGlobalName] || [];
 
-        route.url = typeof route.url === 'function' ? route.url(app) : route.url;
-        // can't get params in url, when url is array. (chair? egg? koa?)
         [].concat(route.url)
           .forEach(url => {
             const methods = [].concat(route.method || 'all');
@@ -55,7 +53,7 @@ export function registerRoute(app: Application) {
       url: pkg.homepage,
       email: undefined,
     },
-  }, getRoutes());
+  }, getRoutes(app.config));
 
   fs.writeFileSync(
     path.join(app.baseDir, 'run', 'openapi_3.json'),

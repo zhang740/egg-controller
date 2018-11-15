@@ -60,6 +60,7 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
         hidden: config.hidden,
         validateType: validateTypeIndex >= 0 ?
           validateMetaInfo.splice(validateTypeIndex, 1)[0].rule : undefined,
+        schema: typeInfo.paramSchema && typeInfo.paramSchema[name],
       });
     });
     if (validateMetaInfo.length) {
