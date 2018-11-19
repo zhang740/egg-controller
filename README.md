@@ -227,6 +227,17 @@ export class HomeController {
        */
       ret404WhenNoBody: false,
     },
+    routeRegister: (app: Application, route: RouteType) => {
+      // 默认路由注册，可使用数据自定义注册方式，比如使用 egg-socket.io
+      app.router.register(
+        route.url as any,
+        [].concat(route.method),
+        [].concat(
+          ...route.middleware.map(m => m(app, route)).filter(m => m),
+          route.function,
+        ) as any,
+      );
+    },
   },
  ...
 }

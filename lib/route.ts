@@ -21,7 +21,6 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
   return function (target: any, key: string) {
     const CtrlType = target.constructor;
     const typeGlobalName = getGlobalType(CtrlType);
-    const routeFn: Function = target[key];
 
     const paramTypes = Reflect.getMetadata('design:paramtypes', target, key) || [];
 
@@ -43,12 +42,12 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
       paramTypes: [],
       returnType: Reflect.getMetadata('design:returntype', target, key),
       middleware: (data.middleware || []),
-      call: () => target[key],
+      function: () => target[key],
     };
 
     /** complete params info */
     const paths = typeof typeInfo.url === 'string' && typeInfo.url.split('/');
-    getParameterNames(routeFn).forEach((name, i) => {
+    getParameterNames(target[key]).forEach((name, i) => {
       const config = methodRules.config[i] || {} as ParamInfoType;
       const validateTypeIndex = validateMetaInfo.findIndex(v => v.name === name);
       typeInfo.paramTypes.push({
@@ -70,15 +69,14 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
     // add param validate middleware
     typeInfo.middleware.push(paramValidateMiddleware);
 
-    let value: any = routeFn;
-    value = async function (this: any, ctx: Context) {
+    typeInfo.function = async function (this: any, ctx: Context) {
       // 'this' maybe is Controller or Context, in Chair.
       ctx = (this.request && this.response ? this : this.ctx) || ctx;
       const ctrl = getInstance(CtrlType, ctx.app, ctx);
       const args = await getParamData(ctx, typeInfo);
       try {
         let ret;
-        if (isGeneratorFunction(routeFn)) {
+        if (isGeneratorFunction(target[key])) {
           ret = await co(ctrl[key](...args));
         } else {
           ret = await Promise.resolve(ctrl[key](...args));
@@ -102,9 +100,8 @@ export function route<T = any>(url?: string | RegExp | RouteMetadataType<T>, dat
         typeInfo.onError(ctx, error);
       }
     };
+    (typeInfo.function as any).__name = key;
 
-    value.__name = key;
-    typeInfo.call = () => value;
     getControllerMetadata(CtrlType).routes.push(typeInfo);
   };
 }

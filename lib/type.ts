@@ -57,7 +57,7 @@ export interface RouteType<ExtType = any> extends RouteMetadataType<ExtType> {
   readonly functionName: string;
   paramTypes: ParamInfoType[];
   returnType: any;
-  call: () => (ctx: Context) => any;
+  function: Function;
 }
 
 /** 控制器注解元信息 */

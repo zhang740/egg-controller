@@ -1,5 +1,7 @@
 import * as path from 'path';
+import { Application } from 'egg';
 import { CliConfig } from 'openapi-generator';
+import { RouteType } from '../lib/type';
 
 export default {
   controller: {
@@ -41,6 +43,16 @@ export default {
        * if 'false', will return 204 (default)
        */
       ret404WhenNoChangeBody: false,
+    },
+    routeRegister: (app: Application, route: RouteType) => {
+      app.router.register(
+        route.url as any,
+        [].concat(route.method),
+        [].concat(
+          ...route.middleware.map(m => m(app, route)).filter(m => m),
+          route.function,
+        ) as any,
+      );
     }
   },
   aop: {

@@ -6,6 +6,8 @@ import { convertToOpenAPI } from './openapi';
 import * as request from 'request';
 
 export function registerRoute(app: Application) {
+  const config = app.config.controller;
+
   const routeDatas: any = {};
   getControllers(app.config)
     .forEach(ctrl => {
@@ -16,18 +18,10 @@ export function registerRoute(app: Application) {
 
         [].concat(route.url)
           .forEach(url => {
-            const methods = [].concat(route.method || 'all');
-            (app as any).register(
-              url,
-              methods,
-              [].concat(
-                ...route.middleware.map(m => m(app, route)).filter(m => m),
-                route.call(),
-              ).filter(m => typeof m === 'function'),
-            );
+            config.routeRegister(app, route);
 
             routeData.push({
-              url: `${methods.map((m: string) => m.toUpperCase()).join('|')} ${url}`,
+              url: `${[].concat(route.method).map((m: string) => m.toUpperCase()).join('|')} ${url}`,
               function: `${route.typeGlobalName} -> ${route.functionName}`,
               path: `${ctrl.filePath}`,
               name: route.name
@@ -60,7 +54,6 @@ export function registerRoute(app: Application) {
     JSON.stringify(openAPIInfo, null, 2), { encoding: 'utf8' }
   );
 
-  const config = app.config.controller;
   if (config.apiReport.enable) {
     if (!config.apiReport.url) {
       throw new Error('[egg-controller] no apiReport url.');
