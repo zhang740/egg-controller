@@ -27,6 +27,8 @@ export interface ParamInfoType {
   validateType?: any;
   /** 使用 OpenAPI JSON Schema 定义 */
   schema?: SchemaObject;
+  /** 是否必选 */
+  required?: boolean;
 }
 
 const extRules: {

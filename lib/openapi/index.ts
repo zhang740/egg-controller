@@ -58,14 +58,18 @@ export function convertToOpenAPI(info: {
         function convertValidateToSchema(validateType: any) {
           if (validateType.type === 'object' && validateType.rule) {
             let properties: any = {};
+            const required = [];
             Object.keys(validateType.rule).forEach(key => {
               properties[key] = convertValidateToSchema(validateType.rule[key]);
+              if (validateType.rule[key].required) {
+                required.push(key);
+              }
             });
 
             const typeName = `GenType_${typeCount++}`;
             builder.addSchema(typeName, {
               type: validateType.type,
-              required: validateType.required,
+              required: required,
               properties,
             });
             return {
@@ -75,10 +79,13 @@ export function convertToOpenAPI(info: {
 
           return {
             type: validateType.type,
-            required: validateType.required,
-            items: validateType.itemType ? {
-              type: validateType.itemType,
-            } : undefined,
+            items: validateType.itemType ?
+              validateType.itemType === 'object' ?
+                convertValidateToSchema(validateType.rule) :
+                { type: validateType.itemType }
+              : undefined,
+            enum: Array.isArray(validateType.values) ?
+              validateType.values.map(v => convertValidateToSchema(v)) : undefined,
             maximum: validateType.max,
             minimum: validateType.min,
           } as SchemaObject;
@@ -114,6 +121,12 @@ export function convertToOpenAPI(info: {
             properties: {},
           };
           inBody.forEach(p => {
+            if (p.required || getValue(() => p.validateType.required)) {
+              if (!requestBodySchema.required) {
+                requestBodySchema.required = [];
+              }
+              requestBodySchema.required.push(p.paramName);
+            }
             requestBodySchema.properties[p.paramName] = getTypeSchema(p);
           });
           const reqBodyTypeName = `ReqType_${typeCount++}`;
@@ -148,7 +161,7 @@ export function convertToOpenAPI(info: {
             return {
               name: p.paramName,
               in: source,
-              required: source === 'path' || getValue(() => p.validateType.required),
+              required: source === 'path' || p.required || getValue(() => p.validateType.required),
               schema: getTypeSchema(p),
             } as ParameterObject;
           }) : undefined,
