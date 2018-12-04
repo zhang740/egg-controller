@@ -24,7 +24,7 @@
 
 ```ts
 export class HomeController extends Controller {
-  @route('/')
+  @route("/")
   hi() {
     return `hi, egg`;
   }
@@ -61,10 +61,11 @@ export default {
 默认配置下，在 app/controller 中创建 controller 文件：
 
 ```ts
-export class HomeController extends Controller { // 如果不需要访问ctx，则不需要继承
-  @route('/api/xxx', { name: '获取XXX数据' })
+// 如果不需要访问ctx，则不需要继承
+export class HomeController extends Controller {
+  @route("/api/xxx", { name: "获取XXX数据" })
   async getXXX(size: number, page: number) {
-    return 'homeIndex';
+    return "homeIndex";
   }
 }
 ```
@@ -113,7 +114,7 @@ export interface RouteMetadataType<ExtType = any> {
 
 #### 参数解析
 
-函数参数来源按顺序优先级从 param、query、body 获取，目前支持 Number 、 Date 、 Boolean 、 Object/any (自动尝试反序列化) 的格式化，支持 bracket 格式数组 query 传参。
+函数参数来源按顺序优先级从 param、query、body 获取，目前支持 Number 、 Date 、 Boolean 、 Object/any (自动尝试反序列化)  的格式化，支持 bracket 格式数组 query 传参。
 
 插件还提供了 FromBody , FromParam , FromQuery , FromHeader 注解可限定参数的获取路径，并支持名称映射。
 
@@ -160,30 +161,36 @@ export class HomeController {
 
 ## 已有项目接入
 
-使用 @route() decorator 形式，替换掉原有的路由定义文件，每个 Controller 需要是类形式
-将路由方法内获取参数代码去除，在函数参数部分声明路由参数，直接 return 返回结果替代 `this.ctx.body` 赋值
+- 使用 @route() decorator 形式
+- 替换掉原有的路由定义文件，每个 Controller 需要是类形式
+- 将路由方法内获取参数代码去除，在函数参数部分声明路由参数
+- 直接 return 返回结果替代 `this.ctx.body` 赋值
 
-## 生成前端SDK
+## 生成前端 SDK
 
-支持模板生成，如果没有找到模板，会在SDK生成目录生成默认模板。
+支持模板生成，如果没有找到模板，会在 SDK 生成目录生成默认模板。
 开发时
 在配置中开启即可，根据需要自定义其他配置。
 打包时
-在配置中配置开启，则会在启动时生成，也可使用 `egg-controller gensdk` 命令手动生成前端SDK。
+在配置中配置开启，则会在启动时生成，也可使用 `egg-controller gensdk` 命令手动生成前端 SDK。
 
 [详细文档](/docs/gensdk.md)
+
+## 运行时数据
+
+应用启动后会在 `run/route_map.json` 写入路由信息，并输出符合 OpenAPI 3.0 标准的接口数据到 `run/openapi_3.json`
 
 ## 异常定义
 
 在 `egg-controller/error` 下定义了一些基础异常类型，可直接使用，也可根据需求继承后使用。
 
-| 类型 | 定义 |
-| --- | --- |
-| `BadRequestError` | 状态码400 |
-| `ForbiddenError` | 状态码403 |
-| `NotFoundError` | 状态码404 |
-| `UnauthorizedError` | 状态码401 |
-| `ServerError` | 状态码400(为了前端有错误message)，realStatus 500 |
+| 类型                | 定义                                               |
+| ------------------- | -------------------------------------------------- |
+| `BadRequestError`   | 状态码 400                                         |
+| `ForbiddenError`    | 状态码 403                                         |
+| `NotFoundError`     | 状态码 404                                         |
+| `UnauthorizedError` | 状态码 401                                         |
+| `ServerError`       | 状态码 400(为了前端有错误 message)，realStatus 500 |
 
 ## 插件默认配置（config）：
 
