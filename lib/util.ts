@@ -1,39 +1,52 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const generatorFuncPrototype = Object.getPrototypeOf(function* (): any { });
+const generatorFuncPrototype = Object.getPrototypeOf(function*(): any {});
 export function isGeneratorFunction(fn: any) {
   return typeof fn === 'function' && Object.getPrototypeOf(fn) === generatorFuncPrototype;
 }
 
-const asyncFuncPrototype = Object.getPrototypeOf(async function () { });
+const asyncFuncPrototype = Object.getPrototypeOf(async function() {});
 export function isAsyncFunction(fn: any) {
   return typeof fn === 'function' && Object.getPrototypeOf(fn) === asyncFuncPrototype;
 }
 
 export type MethodType =
   // from utils.methods
-  'head' | 'options' | 'get' | 'put' | 'patch' | 'post' | 'delete' |
+  | 'head'
+  | 'options'
+  | 'get'
+  | 'put'
+  | 'patch'
+  | 'post'
+  | 'delete'
   // from egg
-  'all' | 'resources' | 'register' | 'redirect';
+  | 'all'
+  | 'resources'
+  | 'register'
+  | 'redirect';
 
-const methodPrefix: { method: MethodType, keys: string[] }[] = [
+const methodPrefix: { method: MethodType; keys: string[] }[] = [
   { method: 'get', keys: ['get', 'find', 'query'] },
   { method: 'put', keys: ['put', 'modify', 'save', 'update', 'change'] },
   { method: 'post', keys: ['post', 'add', 'create'] },
   { method: 'delete', keys: ['delete', 'remove', 'destroy'] },
 ];
 export function getNameAndMethod(funcName: string) {
-  let method: MethodType = 'get', name = funcName;
+  let method: MethodType = 'get',
+    name = funcName;
 
-  let tmpName = funcName.toLowerCase(), usePrefix = '';
-  const prefix = methodPrefix.find(p => p.keys.some(k => {
-    if (tmpName.startsWith(k)) {
-      usePrefix = k;
-      return true;
-    }
-    return false;
-  }));
+  let tmpName = funcName.toLowerCase(),
+    usePrefix = '';
+  const prefix = methodPrefix.find(p =>
+    p.keys.some(k => {
+      if (tmpName.startsWith(k)) {
+        usePrefix = k;
+        return true;
+      }
+      return false;
+    })
+  );
   if (prefix) {
     name = tmpName.substring(usePrefix.length) || funcName;
     method = prefix.method;
@@ -42,9 +55,9 @@ export function getNameAndMethod(funcName: string) {
   return { name, method };
 }
 
-const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-const DEFAULT_PARAMS = /=[^,]*/mg;
-const FAT_ARROWS = /=>.*$/mg;
+const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
+const DEFAULT_PARAMS = /=[^,]*/gm;
+const FAT_ARROWS = /=>.*$/gm;
 
 export function getParameterNames(fn: Function | string) {
   let code = typeof fn === 'function' ? fn.toString() : fn;
@@ -63,17 +76,17 @@ export function getParameterNames(fn: Function | string) {
     }
   }
 
-  code = code
-    .substring(code.indexOf('(') + 1, right)
-    .replace(COMMENTS, '');
+  code = code.substring(code.indexOf('(') + 1, right).replace(COMMENTS, '');
 
   const sub = code.match(/\(.*?\)/g);
-  if (sub) sub.forEach(sub => code = code.replace(sub, ''));
+  if (sub) sub.forEach(sub => (code = code.replace(sub, '')));
 
-  return code
-    .replace(DEFAULT_PARAMS, '')
-    .replace(FAT_ARROWS, '')
-    .match(/([^\s,]+)/g) || [];
+  return (
+    code
+      .replace(DEFAULT_PARAMS, '')
+      .replace(FAT_ARROWS, '')
+      .match(/([^\s,]+)/g) || []
+  );
 }
 
 export function getValue<T = any>(func: () => T, defaultValue?: T) {
@@ -106,17 +119,16 @@ export function getDirFiles(dirPath: string) {
     const filePath = getFile(dirPath);
     filePath && files.push(filePath);
   } else if (dirStat.isDirectory()) {
-    fs.readdirSync(dirPath)
-      .forEach(dirName => {
-        const fullPath = path.join(dirPath, dirName);
-        const stat = fs.statSync(fullPath);
-        if (stat.isDirectory()) {
-          files.push(...getDirFiles(fullPath));
-        } else if (stat.isFile()) {
-          const filePath = getFile(fullPath);
-          filePath && files.push(filePath);
-        }
-      });
+    fs.readdirSync(dirPath).forEach(dirName => {
+      const fullPath = path.join(dirPath, dirName);
+      const stat = fs.statSync(fullPath);
+      if (stat.isDirectory()) {
+        files.push(...getDirFiles(fullPath));
+      } else if (stat.isFile()) {
+        const filePath = getFile(fullPath);
+        filePath && files.push(filePath);
+      }
+    });
   }
   return Array.from(new Set(files));
 }

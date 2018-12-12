@@ -5,21 +5,23 @@ export interface ErrorType {
 
 export abstract class BaseCustomError<ET extends ErrorType = ErrorType> extends Error {
   abstract get status(): number;
-  get realStatus() { return this.status; }
+  get realStatus() {
+    return this.status;
+  }
 
   readonly code: number;
   readonly errors: any;
 
-  constructor(
-    errorData: string | ET = '',
-    public logData?: any,
-  ) {
+  constructor(errorData: string | ET = '', public logData?: any) {
     super(typeof errorData === 'string' ? errorData : errorData.message);
 
-    const { code, message, ...other } = typeof errorData === 'string' ? {
-      code: -1,
-      message: errorData,
-    } : errorData;
+    const { code, message, ...other } =
+      typeof errorData === 'string'
+        ? {
+            code: -1,
+            message: errorData,
+          }
+        : errorData;
 
     this.code = code;
     this.errors = other;

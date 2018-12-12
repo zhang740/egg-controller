@@ -1,5 +1,3 @@
-
-
 import * as path from 'path';
 import { fork } from 'child_process';
 import { getDirFiles } from '../util';
@@ -11,7 +9,7 @@ export async function genAPISDKByPath(
   ctrlDir: string | string[],
   filter = [/^\/api\//g],
   config: CliConfig,
-  appConfig: EggAppConfig,
+  appConfig: EggAppConfig
 ) {
   return new Promise((resolve, _reject) => {
     const files: string[] = [];
@@ -31,7 +29,7 @@ export async function genAPISDKByPath(
       stdio: 'inherit',
       encoding: 'utf8',
     } as any);
-    p.on('message', (_data) => {
+    p.on('message', _data => {
       p.send({
         files,
         config,

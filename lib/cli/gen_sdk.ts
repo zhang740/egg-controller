@@ -8,8 +8,9 @@ export async function genAPISDK(baseDir: string) {
   let { filter, ...rest } = appConfig.controller.genSDK;
   rest.sdkDir = path.isAbsolute(rest.sdkDir) ? rest.sdkDir : path.join(baseDir, rest.sdkDir);
   await Promise.all(
-    [].concat(appConfig.controller.ctrlDir)
-      .map(dir => path.isAbsolute(dir) ? dir : path.join(baseDir, dir))
+    []
+      .concat(appConfig.controller.ctrlDir)
+      .map(dir => (path.isAbsolute(dir) ? dir : path.join(baseDir, dir)))
       .map(async dir => genAPISDKByPath(dir, filter, rest, appConfig))
   );
   console.log('[egg-controller] gen api sdk.');

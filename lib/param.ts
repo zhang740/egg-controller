@@ -35,15 +35,15 @@ const extRules: {
   [typeKey: string]: {
     param: {
       [index: string]: ParamGetterType;
-    },
+    };
     config: {
       [name: string]: {
-        paramName: string,
-        hidden?: boolean,
-        source?: ParamSourceEnum,
+        paramName: string;
+        hidden?: boolean;
+        source?: ParamSourceEnum;
       };
-    },
-  }
+    };
+  };
 } = {};
 
 const getRuleKey = (target: any, key: any) => `${getGlobalType(target.constructor)}_${key}`;
@@ -59,10 +59,14 @@ export function getMethodRules(target: any, key: string) {
   return extRules[ruleKey];
 }
 
-export function FromCustom(custom: ParamGetterType, paramName?: string, config?: {
-  hidden?: boolean;
-  source?: ParamSourceEnum;
-}): ParameterDecorator {
+export function FromCustom(
+  custom: ParamGetterType,
+  paramName?: string,
+  config?: {
+    hidden?: boolean;
+    source?: ParamSourceEnum;
+  }
+): ParameterDecorator {
   return (target, key, index) => {
     const methodRule = getMethodRules(target, key as string);
     methodRule.param[index] = custom;
@@ -135,8 +139,7 @@ function formatArg(argValue: any, validateType: any) {
     case undefined:
       try {
         argValue = JSON.parse(argValue);
-      } catch (error) {
-      }
+      } catch (error) {}
       break;
 
     case Array:
@@ -164,36 +167,39 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
     }
     const config = ctx.app.config.controller.encrypt;
     const privateKeyType = config.type === 'PKCS8' ? 'PRIVATE KEY' : 'RSA PRIVATE KEY';
-    resData = JSON.parse(crypto.privateDecrypt(
-      formatKey(config.privateKey, privateKeyType),
-      new Buffer(reqData)
-    ).toString());
+    resData = JSON.parse(
+      crypto
+        .privateDecrypt(formatKey(config.privateKey, privateKeyType), new Buffer(reqData))
+        .toString()
+    );
   } else {
     resData = {
-      ...ctx.request.body || {},
-      ...ctx.queries || {},
-      ...ctx.query || {},
-      ...ctx.params || {},
+      ...(ctx.request.body || {}),
+      ...(ctx.queries || {}),
+      ...(ctx.query || {}),
+      ...(ctx.params || {}),
     };
   }
 
-  return await Promise.all(typeInfo.paramTypes.map(async p => {
-    const name = p.name;
-    let argValue = undefined;
+  return await Promise.all(
+    typeInfo.paramTypes.map(async p => {
+      const name = p.name;
+      let argValue = undefined;
 
-    // 获取参数值
-    if (p.getter) {
-      argValue = await p.getter(ctx, name, p.type);
-    } else {
-      argValue = resData[name];
-    }
+      // 获取参数值
+      if (p.getter) {
+        argValue = await p.getter(ctx, name, p.type);
+      } else {
+        argValue = resData[name];
+      }
 
-    if (argValue === undefined) {
-      return argValue;
-    }
+      if (argValue === undefined) {
+        return argValue;
+      }
 
-    return formatArg(argValue, getValue(() => p.validateType) || p.type);
-  }));
+      return formatArg(argValue, getValue(() => p.validateType) || p.type);
+    })
+  );
 }
 
 const ParamSymbol = Symbol('Params#EggARoute');

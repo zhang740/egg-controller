@@ -5,6 +5,7 @@ export interface BadRequestErrorType extends ErrorType {
 }
 
 export class BadRequestError extends BaseCustomError<BadRequestErrorType> {
-  get status() { return 400; }
-
+  get status() {
+    return 400;
+  }
 }

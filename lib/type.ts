@@ -31,7 +31,7 @@ export interface RouteMetadataType<ExtType = any> {
       required?: boolean;
       default?: any;
       [other: string]: any;
-    }
+    };
   }[];
   /** param schema */
   paramSchema?: { [name: string]: SchemaObject };
@@ -48,7 +48,10 @@ export interface RouteMetadataType<ExtType = any> {
 
 export type MiddlewareFunctionType = (ctx: any, next: any) => any;
 /** 路由中间件类型 */
-export type MiddlewareType = (app: Application, typeInfo: RouteType) => MiddlewareFunctionType | MiddlewareFunctionType[];
+export type MiddlewareType = (
+  app: Application,
+  typeInfo: RouteType
+) => MiddlewareFunctionType | MiddlewareFunctionType[];
 
 /** 路由类型信息 */
 export interface RouteType<ExtType = any> extends RouteMetadataType<ExtType> {

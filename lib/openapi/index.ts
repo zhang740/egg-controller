@@ -1,6 +1,14 @@
 import {
-  OpenApiBuilder, InfoObject, ContactObject, TagObject,
-  OperationObject, ResponsesObject, ParameterObject, MediaTypeObject, SchemaObject, OpenAPIObject, RequestBodyObject,
+  OpenApiBuilder,
+  InfoObject,
+  ContactObject,
+  TagObject,
+  OperationObject,
+  ResponsesObject,
+  ParameterObject,
+  SchemaObject,
+  OpenAPIObject,
+  RequestBodyObject,
 } from 'openapi3-ts';
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from '../type';
@@ -9,9 +17,13 @@ import { getControllerMetadata } from '../controller';
 import { ParamInfoType } from '../param';
 
 /** convert routeData to OpenAPI(3.x) json schema */
-export function convertToOpenAPI(info: {
-  base: InfoObject, contact?: ContactObject,
-}, data: RouteType[]) {
+export function convertToOpenAPI(
+  info: {
+    base: InfoObject;
+    contact?: ContactObject;
+  },
+  data: RouteType[]
+) {
   const builder = new OpenApiBuilder();
   builder.addInfo({
     ...info.base,
@@ -31,15 +43,18 @@ export function convertToOpenAPI(info: {
         return;
       }
 
-      url = url.split('/').map((item: string) => item.startsWith(':') ? `{${item.substr(1)}}` : item).join('/');
+      url = url
+        .split('/')
+        .map((item: string) => (item.startsWith(':') ? `{${item.substr(1)}}` : item))
+        .join('/');
 
       if (!tags.find(t => t.name === item.typeGlobalName)) {
         const ctrlMeta = getControllerMetadata(item.typeClass);
         tags.push({
           name: item.typeGlobalName,
-          description: ctrlMeta && [
-            ctrlMeta.name, ctrlMeta.description
-          ].filter(s => s).join(' ') || undefined,
+          description:
+            (ctrlMeta && [ctrlMeta.name, ctrlMeta.description].filter(s => s).join(' ')) ||
+            undefined,
         });
       }
       if (!paths[url]) {
@@ -73,19 +88,20 @@ export function convertToOpenAPI(info: {
               properties,
             });
             return {
-              $ref: `#/components/schemas/${typeName}`
+              $ref: `#/components/schemas/${typeName}`,
             };
           }
 
           return {
             type: validateType.type,
-            items: validateType.itemType ?
-              validateType.itemType === 'object' ?
-                convertValidateToSchema(validateType.rule) :
-                { type: validateType.itemType }
+            items: validateType.itemType
+              ? validateType.itemType === 'object'
+                ? convertValidateToSchema(validateType.rule)
+                : { type: validateType.itemType }
               : undefined,
-            enum: Array.isArray(validateType.values) ?
-              validateType.values.map(v => convertValidateToSchema(v)) : undefined,
+            enum: Array.isArray(validateType.values)
+              ? validateType.values.map(v => convertValidateToSchema(v))
+              : undefined,
             maximum: validateType.max,
             minimum: validateType.min,
           } as SchemaObject;
@@ -97,14 +113,18 @@ export function convertToOpenAPI(info: {
             return convertValidateToSchema(p.validateType);
           } else {
             const type = getGlobalType(p.type);
-            const isSimpleType = ['array', 'boolean', 'integer', 'number', 'object', 'string']
-              .some(t => t === type.toLowerCase());
+            const isSimpleType = ['array', 'boolean', 'integer', 'number', 'object', 'string'].some(
+              t => t === type.toLowerCase()
+            );
             // TODO complex type process
             return {
               type: isSimpleType ? type.toLowerCase() : 'object',
-              items: type === 'Array' ? {
-                type: 'object',
-              } : undefined,
+              items:
+                type === 'Array'
+                  ? {
+                      type: 'object',
+                    }
+                  : undefined,
             } as SchemaObject;
           }
         }
@@ -137,16 +157,16 @@ export function convertToOpenAPI(info: {
             content: {
               [reqMediaType]: {
                 schema: {
-                  $ref: `#/components/schemas/${reqBodyTypeName}`
-                }
-              }
-            }
+                  $ref: `#/components/schemas/${reqBodyTypeName}`,
+                },
+              },
+            },
           };
         }
 
         // res
         const responses: ResponsesObject = {
-          default: { description: 'default' }
+          default: { description: 'default' },
         };
 
         paths[url][method] = {
@@ -154,17 +174,19 @@ export function convertToOpenAPI(info: {
           tags: [item.typeGlobalName],
           summary: item.name,
           description: item.description,
-          parameters: inParam.length ? inParam.map(p => {
-            const source = p.source === 'Header' ? 'header' :
-              p.source === 'Param' ? 'path' :
-                'query';
-            return {
-              name: p.paramName,
-              in: source,
-              required: source === 'path' || p.required || getValue(() => p.validateType.required),
-              schema: getTypeSchema(p),
-            } as ParameterObject;
-          }) : undefined,
+          parameters: inParam.length
+            ? inParam.map(p => {
+                const source =
+                  p.source === 'Header' ? 'header' : p.source === 'Param' ? 'path' : 'query';
+                return {
+                  name: p.paramName,
+                  in: source,
+                  required:
+                    source === 'path' || p.required || getValue(() => p.validateType.required),
+                  schema: getTypeSchema(p),
+                } as ParameterObject;
+              })
+            : undefined,
           requestBody,
           responses,
         };

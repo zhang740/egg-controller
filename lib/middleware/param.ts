@@ -11,7 +11,7 @@ export function paramValidateMiddleware(app: Application, typeInfo: RouteType) {
 
   const parameter = new Parameter({ validateRoot: true });
 
-  return async function (ctx: Context, next: any) {
+  return async function(ctx: Context, next: any) {
     const paramData = await getParamData(ctx, typeInfo);
     typeInfo.paramTypes.forEach((param, index) => {
       if (!param.validateType) {

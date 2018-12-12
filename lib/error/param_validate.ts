@@ -5,6 +5,7 @@ export interface ParamValidateErrorType extends ErrorType {
 }
 
 export class ParamValidateError extends BaseCustomError<ParamValidateErrorType> {
-  get status() { return 400; }
-
+  get status() {
+    return 400;
+  }
 }

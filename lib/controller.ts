@@ -1,7 +1,13 @@
 import * as co from 'co';
-import { Controller, Application, EggAppConfig } from 'egg';
+import { Controller, EggAppConfig } from 'egg';
 import { getGlobalType } from 'power-di/utils';
-import { ControllerMetadataType, ControllerType, RouteType, MiddlewareType, MethodType } from './type';
+import {
+  ControllerMetadataType,
+  ControllerType,
+  RouteType,
+  MiddlewareType,
+  MethodType,
+} from './type';
 import { isGeneratorFunction, getNameAndMethod, getCurrentLoadFilePath } from './util';
 import { route } from './route';
 
@@ -9,14 +15,13 @@ const CtrlMetaSymbol = Symbol('CtrlMetaSymbol');
 const controllers: ControllerType[] = [];
 /** 控制器列表 */
 export function getControllers(config: EggAppConfig) {
-  controllers
-    .filter(info => !info.init)
-    .forEach(info => initController(info.classType, config));
+  controllers.filter(info => !info.init).forEach(info => initController(info.classType, config));
   return controllers;
 }
 /** 路由列表 */
 export function getRoutes<ExtType = any>(config: EggAppConfig): RouteType<ExtType>[] {
-  return getControllers(config).map(ctrl => ctrl.routes)
+  return getControllers(config)
+    .map(ctrl => ctrl.routes)
     .reduce((pv, cv) => pv.concat(cv), []);
 }
 
@@ -48,7 +53,7 @@ export function getControllerMetadata(CtrlType: any): ControllerType {
 }
 
 export function controller(meta: ControllerMetadataType = {}) {
-  return (target) => {
+  return target => {
     const metadata = getControllerMetadata(target);
     Object.assign(metadata, meta);
   };
@@ -62,11 +67,15 @@ function initController(target: any, config?: EggAppConfig) {
   }
   metadata.init = true;
 
-  const prefix = (metadata.prefix) ||
-    `/${typeGlobalName.split('_')[0].toLowerCase().replace('controller', '')}`;
+  const prefix =
+    metadata.prefix ||
+    `/${typeGlobalName
+      .split('_')[0]
+      .toLowerCase()
+      .replace('controller', '')}`;
 
   if (metadata.restful) {
-    const restDefine: { name: string, method: MethodType, path: string }[] = [
+    const restDefine: { name: string; method: MethodType; path: string }[] = [
       { name: 'index', method: 'get', path: `${prefix}` },
       { name: 'new', method: 'get', path: `${prefix}/new` },
       { name: 'show', method: 'get', path: `${prefix}/:id` },
@@ -87,7 +96,8 @@ function initController(target: any, config?: EggAppConfig) {
         if (!routeInfo.url) routeInfo.url = rest.path;
       } else {
         route({
-          method: rest.method, url: rest.path,
+          method: rest.method,
+          url: rest.path,
         })(target.prototype, rest.name, undefined);
       }
     });
@@ -101,19 +111,22 @@ function initController(target: any, config?: EggAppConfig) {
     route.middleware = route.middleware.map(mw => {
       return (app: any, typeInfo: RouteType) => {
         const func: any = mw(app, typeInfo);
-        return [].concat(func).filter(s => s).map(item => {
-          return async function (ctx: any, next: any) {
-            try {
-              if (isGeneratorFunction(item)) {
-                return await co(item.apply(this, [ctx, next]));
-              } else {
-                return await item.apply(this, [ctx, next]);
+        return []
+          .concat(func)
+          .filter(s => s)
+          .map(item => {
+            return async function(ctx: any, next: any) {
+              try {
+                if (isGeneratorFunction(item)) {
+                  return await co(item.apply(this, [ctx, next]));
+                } else {
+                  return await item.apply(this, [ctx, next]);
+                }
+              } catch (error) {
+                typeInfo.onError(ctx, error);
               }
-            } catch (error) {
-              typeInfo.onError(ctx, error);
-            }
-          };
-        });
+            };
+          });
       };
     });
 
@@ -127,10 +140,7 @@ function initController(target: any, config?: EggAppConfig) {
         methodAndPath.length > 1 &&
         ['get', 'put', 'post', 'delete', 'patch'].indexOf(methodAndPath[0].toLowerCase()) >= 0
       ) {
-        route.method = [...new Set([]
-          .concat(methodAndPath[0] || [])
-          .concat(route.method || []))
-        ];
+        route.method = [...new Set([].concat(methodAndPath[0] || []).concat(route.method || []))];
         route.url = methodAndPath[1];
       }
     }
@@ -138,34 +148,32 @@ function initController(target: any, config?: EggAppConfig) {
       route.method = parsedPath.method;
     }
 
-    route.url = [].concat(route.url)
-      .map(url => {
-        return typeof url === 'function' ? url(config) : url;
-      });
+    route.url = [].concat(route.url).map(url => {
+      return typeof url === 'function' ? url(config) : url;
+    });
 
     // parse params in path
-    [].concat(route.url)
-      .forEach(url => {
-        if (typeof url === 'string') {
-          url.split('/').forEach(item => {
-            if (item.startsWith(':')) {
-              const paramName = item.substr(1);
-              const paramType = route.paramTypes.find(pt => pt.paramName === paramName);
-              if (paramType) {
-                paramType.source = 'Param';
-              } else {
-                route.paramTypes.push({
-                  name: paramName,
-                  paramName: paramName,
-                  type: String,
-                  source: 'Param',
-                  validateType: undefined,
-                });
-              }
+    [].concat(route.url).forEach(url => {
+      if (typeof url === 'string') {
+        url.split('/').forEach(item => {
+          if (item.startsWith(':')) {
+            const paramName = item.substr(1);
+            const paramType = route.paramTypes.find(pt => pt.paramName === paramName);
+            if (paramType) {
+              paramType.source = 'Param';
+            } else {
+              route.paramTypes.push({
+                name: paramName,
+                paramName: paramName,
+                type: String,
+                source: 'Param',
+                validateType: undefined,
+              });
             }
-          });
-        }
-      });
+          }
+        });
+      }
+    });
   });
 }
 

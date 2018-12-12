@@ -9,18 +9,16 @@ program
   .command('gensdk')
   .description('gen api sdk')
   .option('-p, --project <dir>', 'project dir')
-  .action(function (options) {
+  .action(function(options) {
     const baseDir = options.project || process.cwd();
     genAPISDK(baseDir)
       .then(_ => process.exit(0))
       .catch(error => console.log('Gen Error:\n', error));
   });
 
-program
-  .command('*')
-  .action(function () {
-    program.help();
-  });
+program.command('*').action(function() {
+  program.help();
+});
 
 program.parse(process.argv);
 
