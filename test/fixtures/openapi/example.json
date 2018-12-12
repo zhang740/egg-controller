@@ -9,9 +9,7 @@
     "/api/ctrl/hi": {
       "get": {
         "operationId": "hi",
-        "tags": [
-          "CtrlController"
-        ],
+        "tags": ["CtrlController"],
         "parameters": [
           {
             "name": "type",
@@ -31,9 +29,7 @@
     "/api/encrypt/a": {
       "post": {
         "operationId": "a1",
-        "tags": [
-          "EncryptController"
-        ],
+        "tags": ["EncryptController"],
         "parameters": [
           {
             "name": "data",
@@ -53,9 +49,7 @@
     "/from/query": {
       "post": {
         "operationId": "a1",
-        "tags": [
-          "FromController"
-        ],
+        "tags": ["FromController"],
         "parameters": [
           {
             "name": "a",
@@ -75,9 +69,7 @@
     "/from/param/{a}": {
       "post": {
         "operationId": "a3",
-        "tags": [
-          "FromController"
-        ],
+        "tags": ["FromController"],
         "parameters": [
           {
             "name": "a",
@@ -98,14 +90,17 @@
     "/from/body": {
       "post": {
         "operationId": "a2",
-        "tags": [
-          "FromController"
-        ],
+        "tags": ["FromController"],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReqType_1"
+                "type": "object",
+                "properties": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }
@@ -120,9 +115,7 @@
     "/pathParamTest/{paramName}": {
       "get": {
         "operationId": "paramInPath",
-        "tags": [
-          "IndexController"
-        ],
+        "tags": ["IndexController"],
         "parameters": [
           {
             "name": "paramName",
@@ -143,9 +136,7 @@
     "/funcPath/example": {
       "get": {
         "operationId": "funcPath",
-        "tags": [
-          "IndexController"
-        ],
+        "tags": ["IndexController"],
         "responses": {
           "default": {
             "description": "default"
@@ -156,9 +147,7 @@
     "/": {
       "get": {
         "operationId": "hi",
-        "tags": [
-          "IndexController"
-        ],
+        "tags": ["IndexController"],
         "responses": {
           "default": {
             "description": "default"
@@ -169,9 +158,7 @@
     "/mw/multi": {
       "get": {
         "operationId": "multi",
-        "tags": [
-          "MiddlewareController"
-        ],
+        "tags": ["MiddlewareController"],
         "summary": "async function & middleware",
         "responses": {
           "default": {
@@ -183,9 +170,7 @@
     "/mw/ggmw": {
       "get": {
         "operationId": "ggmw",
-        "tags": [
-          "MiddlewareController"
-        ],
+        "tags": ["MiddlewareController"],
         "summary": "gen function & middleware",
         "parameters": [
           {
@@ -206,9 +191,7 @@
     "/mw/gamw": {
       "get": {
         "operationId": "gamw",
-        "tags": [
-          "MiddlewareController"
-        ],
+        "tags": ["MiddlewareController"],
         "summary": "gen function & async middleware",
         "parameters": [
           {
@@ -229,9 +212,7 @@
     "/mw/amw": {
       "get": {
         "operationId": "amw",
-        "tags": [
-          "MiddlewareController"
-        ],
+        "tags": ["MiddlewareController"],
         "summary": "async function & middleware",
         "parameters": [
           {
@@ -252,9 +233,7 @@
     "/mw/agmw": {
       "get": {
         "operationId": "agmw",
-        "tags": [
-          "MiddlewareController"
-        ],
+        "tags": ["MiddlewareController"],
         "summary": "async function & gen middleware",
         "parameters": [
           {
@@ -275,9 +254,7 @@
     "/api/rest": {
       "get": {
         "operationId": "index",
-        "tags": [
-          "RESTSimpleController"
-        ],
+        "tags": ["RESTSimpleController"],
         "responses": {
           "default": {
             "description": "default"
@@ -288,9 +265,7 @@
     "/api/rest2/new": {
       "get": {
         "operationId": "new",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "responses": {
           "default": {
             "description": "default"
@@ -301,9 +276,7 @@
     "/api/rest2/custom": {
       "get": {
         "operationId": "index",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "responses": {
           "default": {
             "description": "default"
@@ -314,9 +287,7 @@
     "/api/rest2/{id}/edit": {
       "get": {
         "operationId": "edit",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "parameters": [
           {
             "name": "id",
@@ -337,9 +308,7 @@
     "/api/rest2/{id}": {
       "delete": {
         "operationId": "destroy",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "parameters": [
           {
             "name": "id",
@@ -358,9 +327,7 @@
       },
       "put": {
         "operationId": "update",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "parameters": [
           {
             "name": "id",
@@ -379,9 +346,7 @@
       },
       "get": {
         "operationId": "show",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "parameters": [
           {
             "name": "id",
@@ -402,9 +367,7 @@
     "/api/rest2": {
       "post": {
         "operationId": "create",
-        "tags": [
-          "RESTFullController"
-        ],
+        "tags": ["RESTFullController"],
         "responses": {
           "default": {
             "description": "default"
@@ -415,9 +378,7 @@
     "/route/default": {
       "get": {
         "operationId": "default",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "responses": {
           "default": {
             "description": "default"
@@ -428,9 +389,7 @@
     "/home/unittest": {
       "get": {
         "operationId": "customByconfig",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "根据config生成url",
         "responses": {
           "default": {
@@ -442,9 +401,7 @@
     "/home/sort": {
       "get": {
         "operationId": "sort",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "简写",
         "responses": {
           "default": {
@@ -456,15 +413,18 @@
     "/home/put": {
       "put": {
         "operationId": "put",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "put",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReqType_2"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  }
+                }
               }
             }
           }
@@ -479,15 +439,18 @@
     "/home/post": {
       "post": {
         "operationId": "postData",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReqType_3"
+                "type": "object",
+                "properties": {
+                  "param": {
+                    "type": "object"
+                  }
+                }
               }
             }
           }
@@ -502,9 +465,7 @@
     "/home/notfound": {
       "get": {
         "operationId": "notFound",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "404",
         "responses": {
           "default": {
@@ -516,9 +477,7 @@
     "/home/nodata": {
       "get": {
         "operationId": "noData",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "无数据",
         "responses": {
           "default": {
@@ -530,9 +489,7 @@
     "/home/index": {
       "get": {
         "operationId": "index",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "首页",
         "responses": {
           "default": {
@@ -544,9 +501,7 @@
     "/home/getArray": {
       "get": {
         "operationId": "getArray",
-        "tags": [
-          "RouteController"
-        ],
+        "tags": ["RouteController"],
         "summary": "array",
         "parameters": [
           {
@@ -570,9 +525,7 @@
     "/sort/abc": {
       "get": {
         "operationId": "sort2",
-        "tags": [
-          "SortController"
-        ],
+        "tags": ["SortController"],
         "responses": {
           "default": {
             "description": "default"
@@ -583,9 +536,7 @@
     "/sort/*": {
       "get": {
         "operationId": "sort",
-        "tags": [
-          "SortController"
-        ],
+        "tags": ["SortController"],
         "responses": {
           "default": {
             "description": "default"
@@ -596,9 +547,7 @@
     "/api/validate/p1": {
       "post": {
         "operationId": "p1",
-        "tags": [
-          "ParamController"
-        ],
+        "tags": ["ParamController"],
         "parameters": [
           {
             "name": "data",
@@ -619,9 +568,7 @@
     "/noChangeBody": {
       "get": {
         "operationId": "hi",
-        "tags": [
-          "HomeController"
-        ],
+        "tags": ["HomeController"],
         "responses": {
           "default": {
             "description": "default"
@@ -631,32 +578,7 @@
     }
   },
   "components": {
-    "schemas": {
-      "ReqType_1": {
-        "type": "object",
-        "properties": {
-          "a": {
-            "type": "string"
-          }
-        }
-      },
-      "ReqType_2": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          }
-        }
-      },
-      "ReqType_3": {
-        "type": "object",
-        "properties": {
-          "param": {
-            "type": "object"
-          }
-        }
-      }
-    },
+    "schemas": {},
     "responses": {},
     "parameters": {},
     "examples": {},

@@ -149,16 +149,12 @@ export function convertToOpenAPI(
             }
             requestBodySchema.properties[p.paramName] = getTypeSchema(p);
           });
-          const reqBodyTypeName = `ReqType_${typeCount++}`;
-          builder.addSchema(reqBodyTypeName, requestBodySchema);
 
           const reqMediaType = 'application/json';
           requestBody = {
             content: {
               [reqMediaType]: {
-                schema: {
-                  $ref: `#/components/schemas/${reqBodyTypeName}`,
-                },
+                schema: requestBodySchema,
               },
             },
           };
