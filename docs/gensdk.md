@@ -1,6 +1,6 @@
-# 生成前端SDK
+# 生成前端 SDK
 
-既然我们已经收集到了足够的信息，我们可以根据这些信息轻松的生成前端调用SDK。
+既然我们已经收集到了足够的信息，我们可以根据这些信息轻松的生成前端调用 SDK。
 
 这个功能默认是关闭的，开启相关配置：
 
@@ -9,17 +9,22 @@
   controller: {
     genSDK: {
       enable: true,
-      /** 默认使用ts，会生成类型定义，可选js */
-      type: 'ts' as 'ts' | 'js',
       /** 生成SDK的位置 */
-      SDKDir: path.join('app', 'assets', 'service'),
-      /**
-       * 可手动指定生成模板，如果为空默认为 SDK 目录下 template.njk，如果找不到模板会自动生成预置模板及调用基础方法模板
-       * 默认模板：https://github.com/zhang740/api-gensdk/tree/master/lib
-       */
-      templatePath: '',
+      sdkDir: path.join('app', 'assets', 'service'),
       /** 路由过滤方法，默认只生成 '/api' 开头的路由 */
-      filter: [/^\/api\//g] as RegExp[],
+      filter: [/^\/api\//g],
+      /** 默认使用ts，会生成类型定义，可选js */
+      type: 'ts',
+      /** service 生成风格，支持 class | function */
+      serviceType: 'class',
+      /** 类、文件名风格，支持大驼峰、下划线连字符、小驼峰 true | false | lower */
+      camelCase: true,
+      hook: {
+        /** 替换名称 */
+        customClassName: name => name.replace('Controller', 'Service'),
+      },
+      /** 其余属性参见 https://github.com/zhang740/openapi-generator */
+      ...
     },
     ...
   }
@@ -27,7 +32,7 @@
 }
 ```
 
-可根据需要在不同环境下配置开启，由于是自动生成代码，推荐在 `config.local.ts` 配置中开启，并将除模板、基础代码以外的自动生成代码加入 git ignore。在编译打包环境可加入 `egg-controller gensdk` 手动全量生成SDK。
+可根据需要在不同环境下配置开启，由于是自动生成代码，推荐在 `config.local.ts` 配置中开启，并将除模板、基础代码以外的自动生成代码加入 git ignore。在编译打包环境可加入 `egg-controller gensdk` 手动全量生成 SDK。
 
 ## 注意事项
 
