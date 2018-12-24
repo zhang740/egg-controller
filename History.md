@@ -1,3 +1,7 @@
+# 0.3.6 / 2018-12-24
+
+- feat: add transformer to provide response schema data.
+
 # 0.3.5 / 2018-12-12
 
 - update: OpenAPI, can't create ReqType.
