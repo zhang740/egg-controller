@@ -25,7 +25,7 @@ export interface ParamInfoType {
    * 增强参数类型，ts-metadata
    * */
   validateType?: any;
-  /** 使用 OpenAPI JSON Schema 定义 */
+  /** 使用 OAS3 定义 */
   schema?: SchemaObject;
   /** 是否必选 */
   required?: boolean;

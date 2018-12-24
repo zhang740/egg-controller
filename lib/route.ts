@@ -3,11 +3,12 @@ import * as co from 'co';
 import { Context } from 'egg';
 import { getGlobalType } from 'power-di/utils';
 import { getInstance } from 'egg-aop';
-import { getParameterNames, isGeneratorFunction } from './util';
+import { getParameterNames, isGeneratorFunction, getValue } from './util';
 import { RouteType, RouteMetadataType } from './type';
 import { ParamInfoType, getMethodRules, getParamData } from './param';
 import { paramValidateMiddleware } from './middleware/param';
 import { getControllerMetadata } from './controller';
+import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from './transformer/const';
 
 /** 路由注解 */
 export function route<T = any>(
@@ -27,13 +28,17 @@ export function route<T = any>(
 
     const paramTypes = Reflect.getMetadata('design:paramtypes', target, key) || [];
 
+    const schemas = data.schemas || {};
+
     /** from @ali/ts-metadata */
     const validateMetaInfo: any[] = [
       ...(Reflect.getMetadata('custom:validateRule', target, key) || data.validateMetaInfo || []),
     ];
+    /** from transformer/response-schema */
+    const responseSchema = Reflect.getMetadata(RESPONSE_SCHEMA_KEY, target, key);
+    const schemaDefinition = Reflect.getMetadata(SCHEMA_DEFINITION_KEY, target, key);
 
     const methodRules = getMethodRules(target, key);
-
     const typeInfo: RouteType = {
       onError: function(_ctx, err) {
         throw err;
@@ -44,6 +49,12 @@ export function route<T = any>(
       functionName: key,
       paramTypes: [],
       returnType: Reflect.getMetadata('design:returntype', target, key),
+      schemas: {
+        params: schemas.params || [],
+        requestBody: schemas.requestBody || {},
+        response: schemas.response || responseSchema || {},
+        components: schemas.components || schemaDefinition || {},
+      },
       middleware: data.middleware || [],
       function: () => target[key],
     };
@@ -66,7 +77,9 @@ export function route<T = any>(
           validateTypeIndex >= 0
             ? validateMetaInfo.splice(validateTypeIndex, 1)[0].rule
             : undefined,
-        schema: typeInfo.paramSchema && typeInfo.paramSchema[name],
+        schema:
+          getValue(() => typeInfo.schemas.params.find(p => p.name === name).schema) ||
+          getValue(() => typeInfo.schemas.requestBody.properties[name]),
       });
     });
     if (validateMetaInfo.length) {

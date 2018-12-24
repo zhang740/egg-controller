@@ -21,7 +21,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -41,7 +46,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -61,7 +71,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -82,7 +97,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -107,7 +127,12 @@
         },
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -128,7 +153,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -139,7 +169,12 @@
         "tags": ["IndexController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -150,7 +185,12 @@
         "tags": ["IndexController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -162,7 +202,12 @@
         "summary": "async function & middleware",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -183,7 +228,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -204,7 +254,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -225,7 +280,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -246,7 +306,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -257,7 +322,12 @@
         "tags": ["RESTSimpleController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -268,7 +338,12 @@
         "tags": ["RESTFullController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -279,7 +354,12 @@
         "tags": ["RESTFullController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -300,7 +380,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -321,7 +406,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       },
@@ -340,7 +430,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       },
@@ -359,7 +454,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -370,7 +470,12 @@
         "tags": ["RESTFullController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -381,7 +486,12 @@
         "tags": ["RouteController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -393,7 +503,12 @@
         "summary": "根据config生成url",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -405,7 +520,12 @@
         "summary": "简写",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -431,7 +551,12 @@
         },
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -457,7 +582,12 @@
         },
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -469,7 +599,12 @@
         "summary": "404",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -481,7 +616,12 @@
         "summary": "无数据",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -493,7 +633,12 @@
         "summary": "首页",
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -517,7 +662,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -528,7 +678,12 @@
         "tags": ["SortController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -539,7 +694,12 @@
         "tags": ["SortController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -560,7 +720,12 @@
         ],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -571,7 +736,12 @@
         "tags": ["HomeController"],
         "responses": {
           "default": {
-            "description": "default"
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }

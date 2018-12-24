@@ -2,7 +2,7 @@ import { Application, Context } from 'egg';
 import { MethodType } from './util';
 export { MethodType };
 import { ParamInfoType } from './param';
-import { SchemaObject } from 'openapi3-ts';
+import { SchemaObject, ParameterObject } from 'openapi3-ts';
 
 /** 路由注解元信息 */
 export interface RouteMetadataType<ExtType = any> {
@@ -22,7 +22,7 @@ export interface RouteMetadataType<ExtType = any> {
   onError?: (ctx: Context, error: Error) => void;
   /**
    * @deprecated
-   * param valid metadata
+   * param valid metadata, will be replaced by 'schemas' in the future.
    * */
   validateMetaInfo?: {
     name: string;
@@ -33,8 +33,17 @@ export interface RouteMetadataType<ExtType = any> {
       [other: string]: any;
     };
   }[];
-  /** param schema */
-  paramSchema?: { [name: string]: SchemaObject };
+  /** the schema of interface, use OAS3 https://github.com/OAI/OpenAPI-Specification */
+  schemas?: {
+    /** [TODO] param schema */
+    params?: ParameterObject[];
+    /** [TODO] request body schema */
+    requestBody?: SchemaObject;
+    /** response schema, use transformer to provide schema data */
+    response?: SchemaObject;
+    /** reference schema definition */
+    components?: { [schema: string]: SchemaObject };
+  };
   /** RSA encrypt */
   encrypt?: boolean;
 

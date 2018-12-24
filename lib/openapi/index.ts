@@ -9,6 +9,8 @@ import {
   SchemaObject,
   OpenAPIObject,
   RequestBodyObject,
+  ResponseObject,
+  MediaTypeObject,
 } from 'openapi3-ts';
 import { getGlobalType } from 'power-di/utils';
 import { RouteType } from '../type';
@@ -161,8 +163,27 @@ export function convertToOpenAPI(
         }
 
         // res
+        let responseSchema = item.schemas.response || {};
+        const refTypeName = responseSchema.$ref;
+        if (refTypeName) {
+          const definition = item.schemas.components[refTypeName];
+          if (definition) {
+            builder.addSchema(refTypeName, definition);
+            responseSchema = { $ref: `#/components/schemas/${refTypeName}` };
+          } else {
+            console.warn(`[egg-controller] NotFound {${refTypeName}} in components.`);
+            responseSchema = { type: 'any' };
+          }
+        }
         const responses: ResponsesObject = {
-          default: { description: 'default' },
+          default: {
+            description: 'default',
+            content: {
+              'application/json': {
+                schema: responseSchema,
+              } as MediaTypeObject,
+            },
+          } as ResponseObject,
         };
 
         paths[url][method] = {
