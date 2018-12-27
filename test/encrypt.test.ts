@@ -20,16 +20,14 @@ describe('encrypt', () => {
     const publicKey = [
       '-----BEGIN PUBLIC KEY-----',
       require('./fixtures/example/config/public').default,
-      '-----END PUBLIC KEY-----'
+      '-----END PUBLIC KEY-----',
     ].join('\n');
     return request(app.callback())
       .post('/api/encrypt/a')
       .send({
-        encrypt: crypto.publicEncrypt(publicKey, new Buffer(
-          JSON.stringify({ data: 123 })
-        ))
+        encrypt: crypto.publicEncrypt(publicKey, new Buffer(JSON.stringify({ data: 'fff' }))),
       })
       .expect(200)
-      .expect({ data: 123 });
+      .expect({ data: 'fff' });
   });
 });

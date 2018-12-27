@@ -107,6 +107,12 @@ export function FromHeader(paramName?: string): ParameterDecorator {
 
 function formatArg(argValue: any, validateType: any) {
   const type = getValue(() => validateType.type, 'any');
+
+  // undefined 和 null 符合可空定义，是否可空由参数校验判断
+  if (argValue === undefined || argValue === null) {
+    return argValue;
+  }
+
   // 类型转换
   switch (type) {
     case Number:
@@ -131,6 +137,8 @@ function formatArg(argValue: any, validateType: any) {
         argValue = true;
       } else if (argValue === 'false' || argValue === '0' || argValue === 0) {
         argValue = false;
+      } else {
+        argValue = undefined;
       }
       break;
 
@@ -150,9 +158,12 @@ function formatArg(argValue: any, validateType: any) {
       });
       break;
 
-    // TODO 自定义类型，new实例，或者属性赋值
+    case String:
+    case 'string':
+      argValue = `${argValue}`;
+      break;
 
-    // string, enum 无需转换
+    // TODO 自定义类型，new实例，或者属性赋值
   }
 
   return argValue;
@@ -197,7 +208,7 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
         return argValue;
       }
 
-      return formatArg(argValue, getValue(() => p.validateType) || p.type);
+      return formatArg(argValue, getValue(() => p.validateType) || p);
     })
   );
 }

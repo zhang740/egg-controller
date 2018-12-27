@@ -88,7 +88,7 @@ export default function transformer(program: ts.Program) {
                   type.getCallSignatures()[0]
                 );
                 let realType: SchemaObject;
-                if (returnType.symbol.escapedName === 'Promise') {
+                if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
                   realType = parseTypeSchema(
                     (returnType as any).typeArguments[0],
                     fileData,

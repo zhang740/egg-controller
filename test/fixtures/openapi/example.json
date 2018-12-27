@@ -391,8 +391,8 @@
       }
     },
     "/api/rest2/{id}": {
-      "delete": {
-        "operationId": "destroy",
+      "get": {
+        "operationId": "show",
         "tags": ["RESTFullController"],
         "parameters": [
           {
@@ -439,8 +439,8 @@
           }
         }
       },
-      "get": {
-        "operationId": "show",
+      "delete": {
+        "operationId": "destroy",
         "tags": ["RESTFullController"],
         "parameters": [
           {
@@ -704,6 +704,81 @@
         }
       }
     },
+    "/typeformat/string": {
+      "get": {
+        "operationId": "string",
+        "tags": ["TypeFormatController"],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/typeformat/number": {
+      "get": {
+        "operationId": "number",
+        "tags": ["TypeFormatController"],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/typeformat/boolean": {
+      "get": {
+        "operationId": "boolean",
+        "tags": ["TypeFormatController"],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/validate/p1": {
       "post": {
         "operationId": "p1",
@@ -788,6 +863,9 @@
     },
     {
       "name": "SortController"
+    },
+    {
+      "name": "TypeFormatController"
     },
     {
       "name": "ParamController"
