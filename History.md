@@ -1,3 +1,7 @@
+# 0.3.7 / 2018-12-27
+
+- fix: param type format.
+
 # 0.3.6 / 2018-12-24
 
 - feat: add transformer to provide response schema data.
