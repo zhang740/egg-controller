@@ -777,6 +777,29 @@
             }
           }
         }
+      },
+      "post": {
+        "operationId": "booleanPost",
+        "tags": ["TypeFormatController"],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
       }
     },
     "/api/validate/p1": {

@@ -32,4 +32,13 @@ describe('type format', () => {
       .get('/typeformat/boolean?data=true')
       .expect(204);
   });
+
+  it('boolean', () => {
+    return request(app.callback())
+      .post('/typeformat/boolean')
+      .send({
+        data: true,
+      })
+      .expect(204);
+  });
 });

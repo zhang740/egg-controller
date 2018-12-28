@@ -23,4 +23,11 @@ export class TypeFormatController extends Controller {
       throw new BadRequestError(`${typeof data} ${data}`);
     }
   }
+
+  @route('POST /typeformat/boolean')
+  booleanPost(data: boolean) {
+    if (typeof data !== 'boolean') {
+      throw new BadRequestError(`${typeof data} ${data}`);
+    }
+  }
 }

@@ -133,9 +133,9 @@ function formatArg(argValue: any, validateType: any) {
 
     case Boolean:
     case 'boolean':
-      if (argValue === 'true' || argValue === '1' || argValue === 1) {
+      if (argValue === true || argValue === 'true' || argValue === '1' || argValue === 1) {
         argValue = true;
-      } else if (argValue === 'false' || argValue === '0' || argValue === 0) {
+      } else if (argValue === false || argValue === 'false' || argValue === '0' || argValue === 0) {
         argValue = false;
       } else {
         argValue = undefined;
