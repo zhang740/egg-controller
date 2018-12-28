@@ -1,3 +1,7 @@
+# 0.3.8 / 2018-12-28
+
+- fix: param type format of 'boolean' type.
+
 # 0.3.7 / 2018-12-27
 
 - fix: param type format.
