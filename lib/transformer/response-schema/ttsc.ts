@@ -58,7 +58,7 @@ function parseTypeSchema(
   return getSchemaByType(type, typeChecker);
 }
 
-console.log('[egg-controller] load js file: response-schema transformer.');
+console.log('[egg-controller] load transformer: response-schema.');
 
 export default function transformer(program: ts.Program) {
   const typeChecker = program.getTypeChecker();

@@ -50,6 +50,7 @@ export function getSchemaByType(type: ts.Type, typeChecker: ts.TypeChecker): Sch
       ...defaultSchemaObject,
       type: 'object',
       properties: {},
+      required: [],
     };
     type
       .getProperties()
@@ -60,8 +61,12 @@ export function getSchemaByType(type: ts.Type, typeChecker: ts.TypeChecker): Sch
           symbol.valueDeclaration.modifiers.some(m => !!((m as any) & ts.ModifierFlags.Public))
       )
       .forEach(symbol => {
+        const escapedName = `${symbol.escapedName}`;
+        if (!getValue(() => (symbol.valueDeclaration as any).questionToken)) {
+          schema.required.push(escapedName);
+        }
         function setProp(value: any) {
-          schema.properties[`${symbol.escapedName}`] = {
+          schema.properties[escapedName] = {
             description: getComment(symbol),
             ...value,
           };
@@ -77,7 +82,6 @@ export function getSchemaByType(type: ts.Type, typeChecker: ts.TypeChecker): Sch
             type: getTypeByKind(symbol),
           });
         } else {
-          debugger;
           setProp({
             type: 'any',
           });
