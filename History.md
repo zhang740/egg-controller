@@ -1,3 +1,7 @@
+# 0.3.9 / 2019-01-04
+
+- update: response transformer support 'required' info.
+
 # 0.3.8 / 2018-12-28
 
 - fix: param type format of 'boolean' type.
