@@ -1,3 +1,7 @@
+# 0.3.10 / 2019-02-13
+
+- feat: @controller support sub route.
+
 # 0.3.9 / 2019-01-04
 
 - update: response transformer support 'required' info.
