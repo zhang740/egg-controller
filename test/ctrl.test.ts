@@ -22,11 +22,17 @@ describe('ctrl', () => {
       .expect(200);
   });
 
+  it('subRoute', () => {
+    return request(app.callback())
+      .put('/api/ctrl/ss/a?type=sub')
+      .expect('sub')
+      .expect(200);
+  });
+
   it('middleware', () => {
     return request(app.callback())
       .get('/api/ctrl/hi?type=mw')
       .expect('ctrl:middleware')
       .expect(200);
   });
-
 });

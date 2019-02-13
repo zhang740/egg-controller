@@ -143,6 +143,9 @@ function initController(target: any, config?: EggAppConfig) {
         route.method = [...new Set([].concat(methodAndPath[0] || []).concat(route.method || []))];
         route.url = methodAndPath[1];
       }
+      if (!route.url.startsWith('/')) {
+        route.url = `${prefix}/${route.url}`;
+      }
     }
     if (!route.method) {
       route.method = parsedPath.method;

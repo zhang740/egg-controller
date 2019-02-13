@@ -6,6 +6,31 @@
     "contact": {}
   },
   "paths": {
+    "/api/ctrl/ss/a": {
+      "put": {
+        "operationId": "subRoute",
+        "tags": ["CtrlController"],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ctrl/hi": {
       "get": {
         "operationId": "hi",

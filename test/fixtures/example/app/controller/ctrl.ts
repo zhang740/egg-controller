@@ -18,4 +18,9 @@ export class CtrlController extends Controller {
   hi(type: string) {
     return type;
   }
+
+  @route('PUT ss/a')
+  subRoute(type: string) {
+    return type;
+  }
 }
