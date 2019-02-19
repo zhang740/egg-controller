@@ -3,7 +3,6 @@ export * from './getClsMethodKey';
 export * from './getComment';
 export * from './getHashCode';
 export * from './getSchemaByType';
-export * from './getTypeByKind';
 export * from './getValue';
 export * from './isArrayType';
 export * from './isDecoratorNameInclude';

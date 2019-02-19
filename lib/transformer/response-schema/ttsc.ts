@@ -2,14 +2,7 @@ import * as ts from 'typescript';
 import { SchemasObject, SchemaObject } from 'openapi3-ts';
 import { getSchemaByType } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
-import {
-  getValue,
-  getHashCode,
-  getComment,
-  isDecoratorNameInclude,
-  getClsMethodKey,
-  walker,
-} from '../util';
+import { getValue, isDecoratorNameInclude, getClsMethodKey, walker } from '../util';
 import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from '../const';
 
 interface FileMetaType {
@@ -29,34 +22,6 @@ interface FileMetaType {
 const METADATA: {
   [file: string]: FileMetaType;
 } = {};
-
-function parseTypeSchema(
-  type: ts.ObjectType,
-  fileData: FileMetaType,
-  typeChecker: ts.TypeChecker
-): SchemaObject {
-  if (type.isClassOrInterface()) {
-    let typeName = `${type.symbol.escapedName}`;
-    const schema = getSchemaByType(type, typeChecker);
-    const hashCode = getHashCode(schema);
-    if (
-      fileData.schemaObjects[typeName] &&
-      fileData.schemaObjects[typeName].hashCode !== hashCode
-    ) {
-      let i = 1;
-      while (fileData.schemaObjects[`${typeName}_${i}`]) {
-        i++;
-      }
-      typeName = i ? `${typeName}_${i}` : typeName;
-    }
-    fileData.schemaObjects[typeName] = { ...schema, hashCode };
-    return {
-      $ref: typeName,
-      description: getComment(type.symbol),
-    };
-  }
-  return getSchemaByType(type, typeChecker);
-}
 
 console.log('[egg-controller] load transformer: response-schema.');
 
@@ -89,13 +54,15 @@ export default function transformer(program: ts.Program) {
                 );
                 let realType: SchemaObject;
                 if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
-                  realType = parseTypeSchema(
-                    (returnType as any).typeArguments[0],
-                    fileData,
-                    typeChecker
-                  );
+                  realType = getSchemaByType((returnType as any).typeArguments[0], {
+                    typeChecker,
+                    schemaObjects: fileData.schemaObjects,
+                  });
                 } else {
-                  realType = parseTypeSchema(returnType as ts.ObjectType, fileData, typeChecker);
+                  realType = getSchemaByType(returnType as ts.ObjectType, {
+                    typeChecker,
+                    schemaObjects: fileData.schemaObjects,
+                  });
                 }
                 if (!fileData.methodDefine[clsMethod]) {
                   fileData.methodDefine[clsMethod] = {

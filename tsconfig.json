@@ -13,10 +13,9 @@
     "pretty": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "inlineSourceMap": true,
     "importHelpers": true
   },
-  "exclude": [
-    "test"
-  ],
+  "exclude": ["test"],
   "compileOnSave": true
 }
