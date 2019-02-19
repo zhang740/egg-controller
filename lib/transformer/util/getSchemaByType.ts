@@ -14,6 +14,11 @@ export interface GetSchemaConfig {
 export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaObject {
   const { typeChecker } = config;
 
+  // 接口层拆掉 Promise (Promise 对应 orm 中定义 lazy 情况)
+  if (getValue(() => type.symbol.escapedName) === 'Promise') {
+    type = (type as any).typeArguments[0];
+  }
+
   const defaultSchemaObject: SchemaObject = {};
   const comment = getComment((type as any).type || type);
   if (comment) {
@@ -51,13 +56,19 @@ export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaO
       };
     }
   } else if (type.isClassOrInterface()) {
+    if (type.symbol.escapedName === 'Date') {
+      return {
+        ...defaultSchemaObject,
+        type: 'string',
+        format: 'date',
+      };
+    }
     return config.extendClass
       ? extendClass(type, defaultSchemaObject, config)
       : addRefTypeSchema(type, config);
   } else if (objectFlags & ts.ObjectFlags.Anonymous) {
-    extendClass(type as ts.InterfaceType, defaultSchemaObject, config);
+    return extendClass(type as ts.InterfaceType, defaultSchemaObject, config);
   }
-  debugger;
   return {
     ...defaultSchemaObject,
     type: typeChecker.typeToString(type),
@@ -114,15 +125,29 @@ function extendClass(
           ...value,
         };
       }
+
+      if (
+        ts.isMethodDeclaration(symbol.valueDeclaration) ||
+        ts.isMethodSignature(symbol.valueDeclaration) ||
+        ts.isArrowFunction(symbol.valueDeclaration)
+      ) {
+        // 函数忽略
+        return;
+      }
+
       const targetType = getValue(() => (symbol as any).type || (symbol as any).target.type);
       if (targetType) {
         setProp(getSchemaByType(targetType, config));
-      } else if (ts.isMethodDeclaration(symbol.valueDeclaration)) {
-        // 函数忽略
       } else if (symbol.valueDeclaration) {
-        setProp(
-          getSchemaByType(config.typeChecker.getTypeAtLocation(symbol.valueDeclaration), config)
-        );
+        const propType = config.typeChecker.getTypeAtLocation(symbol.valueDeclaration);
+
+        // check arrow function prop.
+        const arrowType = getValue(() => propType.symbol.valueDeclaration);
+        if (arrowType && ts.isArrowFunction(arrowType)) {
+          return;
+        }
+
+        setProp(getSchemaByType(propType, config));
       } else {
         setProp({
           type: 'any',
