@@ -3,7 +3,7 @@ import { SchemaObject, SchemasObject, ReferenceObject } from 'openapi3-ts';
 import { getValue } from '../../util';
 import { getComment } from './getComment';
 import { isArrayType } from './isArrayType';
-import { getHashCode } from '.';
+import { getHashCode } from './getHashCode';
 
 export interface GetSchemaConfig {
   schemaObjects: SchemasObject;
@@ -39,13 +39,13 @@ export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaO
     };
   } else if (type.isUnion && type.isUnion()) {
     const unionType: ts.UnionType = type as any;
-    if (unionType.types.every(t => !!(t.flags & ts.TypeFlags.StringLiteral))) {
+    debugger;
+    if (unionType.types.every(t => !!(t.flags & ts.TypeFlags.EnumLiteral))) {
       return {
         ...defaultSchemaObject,
         type: 'string',
-        enum: unionType.types.map(t => {
-          const str = typeChecker.typeToString(t);
-          return str.substr(1, str.length - 2);
+        enum: unionType.types.map((t: ts.LiteralType) => {
+          return t.value;
         }),
       };
     } else {

@@ -38,6 +38,8 @@ export function convertToOpenAPI(
   const paths: { [path: string]: { [method: string]: OperationObject } } = {};
   let typeCount = 1;
 
+  const schemas: { [key: string]: SchemaObject } = {};
+
   data.forEach(item => {
     [].concat(item.url).forEach(url => {
       if (typeof url !== 'string') {
@@ -131,6 +133,16 @@ export function convertToOpenAPI(
           }
         }
 
+        // add schema
+        const components = item.schemas.components || {};
+        Object.keys(components).forEach(typeName => {
+          if (schemas[typeName] && schemas[typeName].hashCode !== components[typeName].hashCode) {
+            console.warn(`[egg-controller] type: [${typeName}] has multi defined!`);
+            return;
+          }
+          schemas[typeName] = components[typeName];
+        });
+
         // param
         const inParam = item.paramTypes.filter(paramFilter);
 
@@ -168,7 +180,6 @@ export function convertToOpenAPI(
         if (refTypeName) {
           const definition = item.schemas.components[refTypeName];
           if (definition) {
-            builder.addSchema(refTypeName, definition);
             responseSchema = { $ref: `#/components/schemas/${refTypeName}` };
           } else {
             console.warn(`[egg-controller] NotFound {${refTypeName}} in components.`);
@@ -209,6 +220,12 @@ export function convertToOpenAPI(
         };
       });
     });
+  });
+
+  // add schema
+  Object.keys(schemas).forEach(key => {
+    delete schemas[key].hashCode;
+    builder.addSchema(key, schemas[key]);
   });
 
   tags.forEach(tag => builder.addTag(tag));
