@@ -1,3 +1,7 @@
+# 0.3.11 / 2019-02-19
+
+- update: response schema parse.
+
 # 0.3.10 / 2019-02-13
 
 - feat: @controller support sub route.

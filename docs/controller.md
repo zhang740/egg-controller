@@ -42,10 +42,14 @@ export class RESTSimpleController extends Controller {
 ```ts
 @controller({ name: 'Test rest for @controller', prefix: '/api/rest2', restful: true })
 export class RESTFullController extends RESTfulController {
-
   @route({ url: '/api/rest2/custom' }) // 可覆盖路由定义
   index() {
     return 'index';
+  }
+
+  @route({ url: 'sub' }) // 相对路径，/api/test2/sub
+  subRoute() {
+    return 'subRoute';
   }
 
   new() {
