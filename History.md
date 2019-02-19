@@ -1,3 +1,7 @@
+# 0.3.14 / 2019-02-19
+
+- update: add all schemas for openapi data.
+
 # 0.3.13 / 2019-02-19
 
 - fix: response type parse.
