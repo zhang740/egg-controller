@@ -1,3 +1,7 @@
+# 0.3.13 / 2019-02-19
+
+- fix: response type parse.
+
 # 0.3.11 / 2019-02-19
 
 - update: response schema parse.
