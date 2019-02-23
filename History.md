@@ -1,3 +1,7 @@
+# 0.3.15 / 2019-02-23
+
+- fix: getSchemaByType
+
 # 0.3.14 / 2019-02-19
 
 - update: add all schemas for openapi data.
