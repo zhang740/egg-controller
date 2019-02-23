@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { fork } from 'child_process';
+import { fork as cpFork } from 'child_process';
 import { getDirFiles } from '../util';
 import { CliConfig } from 'openapi-generator';
 import { EggAppConfig } from 'egg';
@@ -9,7 +9,8 @@ export async function genAPISDKByPath(
   ctrlDir: string | string[],
   filter = [/^\/api\//g],
   config: CliConfig,
-  appConfig: EggAppConfig
+  appConfig: EggAppConfig,
+  fork = cpFork
 ) {
   return new Promise((resolve, _reject) => {
     const files: string[] = [];

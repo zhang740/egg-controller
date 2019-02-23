@@ -1,4 +1,4 @@
-import { genSDK, genFromData, CliConfig } from 'openapi-generator';
+import { genFromData, CliConfig } from 'openapi-generator';
 import { getRoutes } from '../controller';
 import { loadFile } from '../util';
 import { convertToOpenAPI } from '../openapi';
