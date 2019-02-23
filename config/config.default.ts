@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Application } from 'egg';
 import { CliConfig } from 'openapi-generator';
 import { RouteType } from '../lib/type';
+import { fork } from 'child_process';
 
 export default {
   controller: {
@@ -23,7 +24,7 @@ export default {
       hook: {
         customClassName: name => name.replace('Controller', 'Service'),
       },
-    } as { enable: boolean, filter?: RegExp[] } & CliConfig,
+    } as { enable: boolean; filter?: RegExp[] } & CliConfig,
     /** api info report */
     apiReport: {
       enable: false,
@@ -45,15 +46,12 @@ export default {
       ret404WhenNoChangeBody: false,
     },
     routeRegister: (app: Application, route: RouteType) => {
-      app.router.register(
-        route.url as any,
-        [].concat(route.method),
-        [].concat(
-          ...route.middleware.map(m => m(app, route)).filter(m => m),
-          route.function,
-        ) as any,
-      );
-    }
+      app.router.register(route.url as any, [].concat(route.method), [].concat(
+        ...route.middleware.map(m => m(app, route)).filter(m => m),
+        route.function
+      ) as any);
+    },
+    fork,
   },
   aop: {
     autoRegisterToCtx: true,

@@ -13,17 +13,26 @@ export default (agent: Agent) => {
     const ctrlDir = ([] as string[]).concat(config.ctrlDir).map(dir => {
       return path.isAbsolute(dir) ? dir : path.join(agent.baseDir, dir);
     });
-    rest.sdkDir = path.isAbsolute(rest.sdkDir) ? rest.sdkDir : path.join(agent.baseDir, rest.sdkDir);
+    rest.sdkDir = path.isAbsolute(rest.sdkDir)
+      ? rest.sdkDir
+      : path.join(agent.baseDir, rest.sdkDir);
 
     console.log('[egg-controller] gen api sdk.');
-    genAPISDKByPath(ctrlDir, filter, rest, agent.config);
+    genAPISDKByPath(ctrlDir, filter, rest, agent.config, config.fork);
 
     ctrlDir.forEach(dir => {
       (agent as any).watcher.watch(dir, (file: any) => {
         console.log('[egg-controller] file changed', file.path);
-        genAPISDKByPath(file.path, filter, {
-          ...rest, autoClear: false
-        }, agent.config);
+        genAPISDKByPath(
+          file.path,
+          filter,
+          {
+            ...rest,
+            autoClear: false,
+          },
+          agent.config,
+          config.fork
+        );
       });
     });
   }
