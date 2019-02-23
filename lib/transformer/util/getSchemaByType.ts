@@ -135,9 +135,10 @@ function extendClass(
       }
 
       if (
-        ts.isMethodDeclaration(symbol.valueDeclaration) ||
-        ts.isMethodSignature(symbol.valueDeclaration) ||
-        ts.isArrowFunction(symbol.valueDeclaration)
+        symbol.valueDeclaration &&
+        (ts.isMethodDeclaration(symbol.valueDeclaration) ||
+          ts.isMethodSignature(symbol.valueDeclaration) ||
+          ts.isArrowFunction(symbol.valueDeclaration))
       ) {
         // 函数忽略
         return;
