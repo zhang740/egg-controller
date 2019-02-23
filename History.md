@@ -1,6 +1,10 @@
+# 0.3.16 / 2019-02-23
+
+- update: fork support config.
+
 # 0.3.15 / 2019-02-23
 
-- fix: getSchemaByType
+- fix: getSchemaByType.
 
 # 0.3.14 / 2019-02-19
 
