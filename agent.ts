@@ -23,16 +23,7 @@ export default (agent: Agent) => {
     ctrlDir.forEach(dir => {
       (agent as any).watcher.watch(dir, (file: any) => {
         console.log('[egg-controller] file changed', file.path);
-        genAPISDKByPath(
-          file.path,
-          filter,
-          {
-            ...rest,
-            autoClear: false,
-          },
-          agent.config,
-          config.fork
-        );
+        genAPISDKByPath(ctrlDir, filter, rest, agent.config, config.fork);
       });
     });
   }
