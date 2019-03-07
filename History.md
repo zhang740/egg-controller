@@ -1,3 +1,7 @@
+# 0.3.18 / 2019-03-07
+
+- update: gen all controller when someone changed. (typings for API need scan all controllers.)
+
 # 0.3.17 / 2019-02-23
 
 - update: fork support config.
