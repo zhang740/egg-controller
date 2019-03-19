@@ -11,7 +11,7 @@ export const authMiddleware = (app: Application, typeInfo: RouteType) => {
     return;
   }
   return async (ctx: Context, next: any) => {
-    if ((ctx as any).SkipAuthSymbol) {
+    if ((ctx as any)[SkipAuthSymbol]) {
       return next();
     }
     const paramObj = await getParamDataObj(ctx, typeInfo);
