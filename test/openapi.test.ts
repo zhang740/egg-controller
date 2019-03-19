@@ -18,7 +18,7 @@ describe('openapi', () => {
   it('normal', () => {
     assert.deepEqual(
       require('./fixtures/example/run/openapi_3.json'),
-      require('./fixtures/openapi/example.json'),
+      require('./fixtures/openapi/example.json')
     );
   });
 });

@@ -43,6 +43,7 @@
     "colorful": "^2.1.0",
     "commander": "^2.17.1",
     "egg-aop": "^0.5.2",
+    "jsencrypt": "^3.0.0-rc.1",
     "openapi-generator": "^0.1.9",
     "openapi3-ts": "^1.0.2",
     "parameter": "^3.0.0",

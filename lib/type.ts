@@ -3,6 +3,7 @@ import { MethodType } from './util';
 export { MethodType };
 import { ParamInfoType } from './param';
 import { SchemaObject, ParameterObject } from 'openapi3-ts';
+import { BaseAuth } from './auth';
 
 /** 路由注解元信息 */
 export interface RouteMetadataType<ExtType = any> {
@@ -16,6 +17,7 @@ export interface RouteMetadataType<ExtType = any> {
   description?: string;
   /** before middleware of router */
   middleware?: MiddlewareType[];
+  auth?: (typeof BaseAuth)[];
   /** router extinfo */
   extInfo?: ExtType;
   /** callback of the router function throw error */

@@ -12,6 +12,8 @@ export default {
     ctrlDir: path.join('app', 'controller') as string | string[],
     /** param validate */
     paramValidate: true,
+    /** auth middleware */
+    auth: true,
     /** generate frontend request sdk */
     genSDK: {
       enable: false,

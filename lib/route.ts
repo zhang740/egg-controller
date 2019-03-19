@@ -6,9 +6,10 @@ import { getInstance } from 'egg-aop';
 import { getParameterNames, isGeneratorFunction, getValue } from './util';
 import { RouteType, RouteMetadataType } from './type';
 import { ParamInfoType, getMethodRules, getParamData } from './param';
-import { paramValidateMiddleware } from './middleware/param';
 import { getControllerMetadata } from './controller';
 import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from './transformer/const';
+import { paramValidateMiddleware } from './middleware/paramValidate';
+import { authMiddleware } from './middleware/auth';
 
 /** 路由注解 */
 export function route<T = any>(
@@ -90,8 +91,8 @@ export function route<T = any>(
       );
     }
 
-    // add param validate middleware
-    typeInfo.middleware.push(paramValidateMiddleware);
+    // add default middleware
+    typeInfo.middleware.push(paramValidateMiddleware, authMiddleware);
 
     typeInfo.function = async function(this: any, ctx: Context) {
       // 'this' maybe is Controller or Context, in Chair.

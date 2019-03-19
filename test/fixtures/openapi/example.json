@@ -6,6 +6,79 @@
     "contact": {}
   },
   "paths": {
+    "/auth/needParamOk": {
+      "get": {
+        "operationId": "needParamOk",
+        "tags": ["AuthController"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/needParam": {
+      "get": {
+        "operationId": "needParam",
+        "tags": ["AuthController"],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forbidden": {
+      "get": {
+        "operationId": "forbidden",
+        "tags": ["AuthController"],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/default": {
+      "get": {
+        "operationId": "default",
+        "tags": ["AuthController"],
+        "responses": {
+          "default": {
+            "description": "default",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ctrl/ss/a": {
       "put": {
         "operationId": "subRoute",
@@ -882,6 +955,9 @@
     "callbacks": {}
   },
   "tags": [
+    {
+      "name": "AuthController"
+    },
     {
       "name": "CtrlController",
       "description": "Test for @controller"
