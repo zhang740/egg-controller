@@ -24,7 +24,7 @@
 
 ```ts
 export class HomeController extends Controller {
-  @route("/")
+  @route('/')
   hi() {
     return `hi, egg`;
   }
@@ -63,9 +63,9 @@ export default {
 ```ts
 // 如果不需要访问ctx，则不需要继承
 export class HomeController extends Controller {
-  @route("/api/xxx", { name: "获取XXX数据" })
+  @route('/api/xxx', { name: '获取XXX数据' })
   async getXXX(size: number, page: number) {
-    return "homeIndex";
+    return 'homeIndex';
   }
 }
 ```
@@ -192,6 +192,24 @@ export class HomeController {
 | `UnauthorizedError` | 状态码 401                                         |
 | `ServerError`       | 状态码 400(为了前端有错误 message)，realStatus 500 |
 
+## 权限
+
+权限可继承 BaseAuth ，实现自定义的权限拦截
+
+```ts
+export class NeedParamAuth extends BaseAuth {
+  async has(id: string): Promise<boolean> {
+    return id === '123';
+  }
+}
+
+@controller({ prefix: '/auth' })
+export class AuthController extends Controller {
+  @route({ auth: [NeedParamAuth] })
+  needParamOk(id: string) {}
+}
+```
+
 ## 插件默认配置（config）：
 
 ```ts
@@ -204,6 +222,8 @@ export class HomeController {
     ctrlDir: path.join('app', 'controller') as string | string[],
     /* 是否开启参数校验 */
     paramValidate: true,
+    /** 是否使用权限拦截 */
+    auth: true,
     /* 生成前端SDK配置 */
     genSDK: {
       /* 是否开启，默认关闭 */

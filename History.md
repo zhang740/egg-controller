@@ -1,3 +1,7 @@
+# 0.3.19 / 2019-03-19
+
+- feat: auth intercept.
+
 # 0.3.18 / 2019-03-07
 
 - update: gen all controller when someone changed. (typings for API need scan all controllers.)
