@@ -1,3 +1,7 @@
+# 0.3.21 / 2019-05-05
+
+- feat: opt param for auth.
+
 # 0.3.19 / 2019-03-19
 
 - feat: auth intercept.
