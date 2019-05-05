@@ -19,10 +19,10 @@ export const authMiddleware = (app: Application, typeInfo: RouteType) => {
       (typeInfo.auth || [])
         .map(async permRole => {
           const params = getRoleInfo(permRole).params.map(p => {
-            if (paramObj[p] === undefined) {
-              throw new BadRequestError(`Permission [${permRole.name}] NEED Param [${p}]`);
+            if (p.required && !(p.name in paramObj)) {
+              throw new BadRequestError(`Permission [${permRole.name}] NEED Param [${p.name}]`);
             }
-            return paramObj[p];
+            return paramObj[p.name];
           });
           if (!(await getInstance<BaseAuth>(permRole, ctx.app, ctx).has(...params))) {
             throw new ForbiddenError(

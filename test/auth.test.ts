@@ -44,4 +44,22 @@ describe('auth', () => {
       .get('/auth/forbidden')
       .expect(403);
   });
+
+  it('opt param', () => {
+    return request(app.callback())
+      .get('/auth/opt')
+      .expect(204);
+  });
+
+  it('opt param ok', () => {
+    return request(app.callback())
+      .get('/auth/opt?id=opt')
+      .expect(204);
+  });
+
+  it('opt param fail', () => {
+    return request(app.callback())
+      .get('/auth/opt?id=fail')
+      .expect(403);
+  });
 });

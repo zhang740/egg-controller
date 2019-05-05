@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const generatorFuncPrototype = Object.getPrototypeOf(function*(): any {});
+const generatorFuncPrototype = Object.getPrototypeOf(function* (): any { });
 export function isGeneratorFunction(fn: any) {
   return typeof fn === 'function' && Object.getPrototypeOf(fn) === generatorFuncPrototype;
 }
 
-const asyncFuncPrototype = Object.getPrototypeOf(async function() {});
+const asyncFuncPrototype = Object.getPrototypeOf(async function () { });
 export function isAsyncFunction(fn: any) {
   return typeof fn === 'function' && Object.getPrototypeOf(fn) === asyncFuncPrototype;
 }
@@ -60,6 +60,10 @@ const DEFAULT_PARAMS = /=[^,]*/gm;
 const FAT_ARROWS = /=>.*$/gm;
 
 export function getParameterNames(fn: Function | string) {
+  if (!fn) {
+    console.warn('NO fn for getParameterNames!');
+    return [];
+  }
   let code = typeof fn === 'function' ? fn.toString() : fn;
 
   let right = 0;
