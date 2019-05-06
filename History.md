@@ -1,3 +1,8 @@
+# 0.3.22 / 2019-05-06
+
+- update: split before/after function of transformer.
+- update: export @opt of BaseAuth.
+
 # 0.3.21 / 2019-05-05
 
 - feat: opt param for auth.
