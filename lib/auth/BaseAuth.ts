@@ -29,6 +29,7 @@ export function getRoleInfo(roleType: typeof BaseAuth): RoleMetaInfo {
   return desc.value;
 }
 
+/** opt param for BaseAuth */
 export function opt() {
   return (target, key, index): any => {
     const info = getRoleInfo(target.constructor);

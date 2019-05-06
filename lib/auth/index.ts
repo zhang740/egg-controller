@@ -1,1 +1,1 @@
-export { BaseAuth } from './BaseAuth';
+export { BaseAuth, opt } from './BaseAuth';
