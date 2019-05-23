@@ -5,7 +5,7 @@ describe('openapi', () => {
   let app: any;
   before(() => {
     app = mm.app({
-      baseDir: 'example',
+      baseDir: 'openapi',
       plugin: 'controller',
     } as any);
     return app.ready();
@@ -17,7 +17,7 @@ describe('openapi', () => {
 
   it('normal', () => {
     assert.deepEqual(
-      require('./fixtures/example/run/openapi_3.json'),
+      require('./fixtures/openapi/run/openapi_3.json'),
       require('./fixtures/openapi/example.json')
     );
   });

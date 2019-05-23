@@ -1,0 +1,6 @@
+{
+  "name": "openapi",
+  "egg": {
+    "typescript": true
+  }
+}
