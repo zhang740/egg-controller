@@ -69,7 +69,7 @@ export function convertToOpenAPI(
 
         function paramFilter(p: ParamInfoType) {
           if (p.source === 'Any') {
-            return ['post', 'put'].every(m => m !== item.method);
+            return ['post', 'put'].every(m => m !== method);
           }
           return p.source !== 'Body';
         }
@@ -126,8 +126,8 @@ export function convertToOpenAPI(
               items:
                 type === 'Array'
                   ? {
-                      type: 'object',
-                    }
+                    type: 'object',
+                  }
                   : undefined,
             } as SchemaObject;
           }
@@ -204,16 +204,16 @@ export function convertToOpenAPI(
           description: item.description,
           parameters: inParam.length
             ? inParam.map(p => {
-                const source =
-                  p.source === 'Header' ? 'header' : p.source === 'Param' ? 'path' : 'query';
-                return {
-                  name: p.paramName,
-                  in: source,
-                  required:
-                    source === 'path' || p.required || getValue(() => p.validateType.required),
-                  schema: getTypeSchema(p),
-                } as ParameterObject;
-              })
+              const source =
+                p.source === 'Header' ? 'header' : p.source === 'Param' ? 'path' : 'query';
+              return {
+                name: p.paramName,
+                in: source,
+                required:
+                  source === 'path' || p.required || getValue(() => p.validateType.required),
+                schema: getTypeSchema(p),
+              } as ParameterObject;
+            })
             : undefined,
           requestBody,
           responses,
