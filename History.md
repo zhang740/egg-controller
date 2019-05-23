@@ -1,3 +1,8 @@
+# 0.3.23 / 2019-05-23
+
+- fix: param location infer fail, openapi.
+- test: update openapi test.
+
 # 0.3.22 / 2019-05-06
 
 - update: split before/after function of transformer.
