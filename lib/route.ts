@@ -23,7 +23,7 @@ export function route<T = any>(
     data = url;
   }
 
-  return function(target: any, key: string) {
+  return function (target: any, key: string) {
     const CtrlType = target.constructor;
     const typeGlobalName = getGlobalType(CtrlType);
 
@@ -34,14 +34,20 @@ export function route<T = any>(
     /** from @ali/ts-metadata */
     const validateMetaInfo: any[] = [
       ...(Reflect.getMetadata('custom:validateRule', target, key) || data.validateMetaInfo || []),
-    ];
+    ].filter(info => {
+      const valid = info.name && info.rule && info.rule.type;
+      if (!valid) {
+        console.warn('[egg-controller] validate metaInfo in ', typeGlobalName, '->', key, ' is invalid:', info);
+      }
+      return valid;
+    });
     /** from transformer/response-schema */
     const responseSchema = Reflect.getMetadata(RESPONSE_SCHEMA_KEY, target, key);
     const schemaDefinition = Reflect.getMetadata(SCHEMA_DEFINITION_KEY, target, key);
 
     const methodRules = getMethodRules(target, key);
     const typeInfo: RouteType = {
-      onError: function(_ctx, err) {
+      onError: function (_ctx, err) {
         throw err;
       },
       ...data,
@@ -94,7 +100,7 @@ export function route<T = any>(
     // add default middleware
     typeInfo.middleware.push(paramValidateMiddleware, authMiddleware);
 
-    typeInfo.function = async function(this: any, ctx: Context) {
+    typeInfo.function = async function (this: any, ctx: Context) {
       // 'this' maybe is Controller or Context, in Chair.
       ctx = (this.request && this.response ? this : this.ctx) || ctx;
       const ctrl = getInstance(CtrlType, ctx.app, ctx);

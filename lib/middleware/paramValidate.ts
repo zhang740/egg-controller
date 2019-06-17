@@ -11,7 +11,7 @@ export function paramValidateMiddleware(app: Application, typeInfo: RouteType) {
 
   const parameter = new Parameter({ validateRoot: true });
 
-  return async function(ctx: Context, next: any) {
+  return async function (ctx: Context, next: any) {
     const paramData = await getParamData(ctx, typeInfo);
     typeInfo.paramTypes.forEach((param, index) => {
       if (!param.validateType) {
@@ -22,8 +22,12 @@ export function paramValidateMiddleware(app: Application, typeInfo: RouteType) {
       const paramName = param.name;
       const rule = { [paramName]: param.validateType };
       const data = typeof paramData[index] !== 'undefined' ? { [paramName]: paramData[index] } : {};
-
-      const error = parameter.validate(rule, data);
+      let error: any;
+      try {
+        error = parameter.validate(rule, data);
+      } catch (err) {
+        error = err;
+      }
       if (error) {
         const reason = [
           `param validate fail，paramName：${paramName}`,
