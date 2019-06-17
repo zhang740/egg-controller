@@ -1,3 +1,7 @@
+# 0.3.24 / 2019-06-17
+
+- update: filter invalid param validate info.
+
 # 0.3.23 / 2019-05-23
 
 - fix: param location infer fail, openapi.
