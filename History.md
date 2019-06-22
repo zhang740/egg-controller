@@ -1,3 +1,7 @@
+# 0.3.25 / 2019-06-22
+
+- update: warn -> log when validate info is invalid.
+
 # 0.3.24 / 2019-06-17
 
 - update: filter invalid param validate info.
