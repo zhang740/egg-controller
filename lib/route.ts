@@ -37,7 +37,7 @@ export function route<T = any>(
     ].filter(info => {
       const valid = info.name && info.rule && info.rule.type;
       if (!valid) {
-        console.warn('[egg-controller] validate metaInfo in ', typeGlobalName, '->', key, ' is invalid:', info);
+        console.log('[egg-controller] validate metaInfo in ', typeGlobalName, '->', key, ' is invalid:', info);
       }
       return valid;
     });
