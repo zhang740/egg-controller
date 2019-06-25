@@ -1,3 +1,7 @@
+# 0.3.26 / 2019-06-25
+
+- fix: response parse type.
+
 # 0.3.25 / 2019-06-22
 
 - update: warn -> log when validate info is invalid.
