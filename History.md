@@ -1,3 +1,7 @@
+# 0.3.28 / 2019-06-27
+
+- fix: oas3 data with reference type.
+
 # 0.3.26 / 2019-06-25
 
 - fix: response parse type.
