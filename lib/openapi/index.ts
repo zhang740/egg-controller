@@ -176,11 +176,11 @@ export function convertToOpenAPI(
 
         // res
         let responseSchema = item.schemas.response || {};
-        const refTypeName = responseSchema.$ref;
+        const refTypeName: string = responseSchema.$ref;
         if (refTypeName) {
-          const definition = item.schemas.components[refTypeName];
+          const definition = item.schemas.components[refTypeName.replace('#/components/schemas/', '')];
           if (definition) {
-            responseSchema = { $ref: `#/components/schemas/${refTypeName}` };
+            responseSchema = { $ref: refTypeName };
           } else {
             console.warn(`[egg-controller] NotFound {${refTypeName}} in components.`);
             responseSchema = { type: 'any' };

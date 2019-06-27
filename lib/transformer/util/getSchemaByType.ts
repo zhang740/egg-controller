@@ -97,7 +97,7 @@ function addRefTypeSchema(type: ts.InterfaceType, config: GetSchemaConfig): Refe
   }
   schemaObjects[typeName] = { ...schema, hashCode };
   return {
-    $ref: typeName,
+    $ref: `#/components/schemas/${typeName}`,
   };
 }
 
