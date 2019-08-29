@@ -39,7 +39,6 @@ export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaO
     };
   } else if (type.isUnion && type.isUnion()) {
     const unionType: ts.UnionType = type as any;
-    debugger;
     if (unionType.types.every(t => !!(t.flags & ts.TypeFlags.EnumLiteral))) {
       return {
         ...defaultSchemaObject,
@@ -55,6 +54,13 @@ export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaO
         oneOf: unionType.types.map(t => getSchemaByType(t, config)),
       };
     }
+  } else if (type.isIntersection && type.isIntersection()) {
+    const intersectionType: ts.IntersectionType = type as any;
+    return {
+      ...defaultSchemaObject,
+      type: 'object',
+      allOf: intersectionType.types.map(t => getSchemaByType(t, config)),
+    };
   } else if (type.isClassOrInterface()) {
     switch (type.symbol.escapedName) {
       case 'Date':

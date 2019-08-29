@@ -4,6 +4,7 @@ import { getSchemaByType } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
 import { getValue, isDecoratorNameInclude, getClsMethodKey, walker } from '../util';
 import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from '../const';
+import { EmitFlags } from 'typescript';
 
 interface FileMetaType {
   methodDefine: {
@@ -44,7 +45,11 @@ export default function transformer(program: ts.Program) {
   };
 }
 
-export function before(_: ts.TransformationContext, sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker) {
+export function before(
+  _: ts.TransformationContext,
+  sourceFile: ts.SourceFile,
+  typeChecker: ts.TypeChecker
+) {
   // 当前编译文件需要保存的数据
   const fileData = (METADATA[sourceFile.fileName] = {
     // 方法定义
@@ -64,9 +69,7 @@ export function before(_: ts.TransformationContext, sourceFile: ts.SourceFile, t
           );
 
           const type = typeChecker.getTypeAtLocation(cbNode);
-          const returnType = typeChecker.getReturnTypeOfSignature(
-            type.getCallSignatures()[0]
-          );
+          const returnType = typeChecker.getReturnTypeOfSignature(type.getCallSignatures()[0]);
           let realType: SchemaObject;
           if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
             realType = getSchemaByType((returnType as any).typeArguments[0], {
@@ -106,31 +109,43 @@ export function after(_: ts.TransformationContext, sourceFile: ts.SourceFile) {
           );
           if (responseSchema) {
             (node as any).expression.arguments[0].elements = (node as any).expression.arguments[0].elements.concat(
-              ts.createCall((ts as any).getHelperName('__metadata'), undefined, [
-                ts.createLiteral(RESPONSE_SCHEMA_KEY),
-                convert(responseSchema),
-              ]),
-              ts.createCall((ts as any).getHelperName('__metadata'), undefined, [
-                ts.createLiteral(SCHEMA_DEFINITION_KEY),
-                ts.createIdentifier('__SchemaDefinition'),
-              ])
+              ts.createCall(
+                ts.setEmitFlags(
+                  ts.createIdentifier('__metadata'),
+                  EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
+                ),
+                undefined,
+                [ts.createLiteral(RESPONSE_SCHEMA_KEY), convert(responseSchema)]
+              ),
+              ts.createCall(
+                ts.setEmitFlags(
+                  ts.createIdentifier('__metadata'),
+                  EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
+                ),
+                undefined,
+                [ts.createLiteral(SCHEMA_DEFINITION_KEY), ts.createIdentifier('__SchemaDefinition')]
+              )
             );
           }
         }
       }
     });
 
-    (sourceFile.statements as any).unshift(
-      ts.createVariableDeclarationList(
-        [
-          ts.createVariableDeclaration(
-            '__SchemaDefinition',
-            undefined,
-            convert(fileData.schemaObjects)
-          ),
-        ],
-        ts.NodeFlags.Const
-      )
-    );
+    sourceFile.statements = ts.createNodeArray([
+      ts.createVariableStatement(
+        [],
+        ts.createVariableDeclarationList(
+          [
+            ts.createVariableDeclaration(
+              '__SchemaDefinition',
+              undefined,
+              convert(fileData.schemaObjects)
+            ),
+          ],
+          ts.NodeFlags.Const
+        )
+      ),
+      ...sourceFile.statements,
+    ]);
   }
 }
