@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { SchemasObject, SchemaObject } from 'openapi3-ts';
-import { getSchemaByType } from '../util/getSchemaByType';
+import { getSchemaByType, TypeCache } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
 import { getValue, isDecoratorNameInclude, getClsMethodKey, walker } from '../util';
 import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from '../const';
@@ -18,6 +18,7 @@ interface FileMetaType {
     };
   };
   schemaObjects: SchemasObject;
+  typeCache: TypeCache[];
 }
 
 const METADATA: {
@@ -55,6 +56,7 @@ export function before(
     // 方法定义
     methodDefine: {},
     schemaObjects: {},
+    typeCache: [],
   });
 
   // 遍历文件中所有的 class
@@ -75,11 +77,13 @@ export function before(
             realType = getSchemaByType((returnType as any).typeArguments[0], {
               typeChecker,
               schemaObjects: fileData.schemaObjects,
+              typeCache: fileData.typeCache,
             });
           } else {
             realType = getSchemaByType(returnType as ts.ObjectType, {
               typeChecker,
               schemaObjects: fileData.schemaObjects,
+              typeCache: fileData.typeCache,
             });
           }
           if (!fileData.methodDefine[clsMethod]) {

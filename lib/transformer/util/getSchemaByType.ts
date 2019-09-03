@@ -5,8 +5,16 @@ import { getComment } from './getComment';
 import { isArrayType } from './isArrayType';
 import { getHashCode } from './getHashCode';
 
+export interface TypeCache {
+  typeName: string;
+  schemaName: string;
+  type: ts.Type;
+  hashCode?: string;
+}
+
 export interface GetSchemaConfig {
   schemaObjects: SchemasObject;
+  typeCache: TypeCache[];
   typeChecker: ts.TypeChecker;
   extendClass?: boolean;
 }
@@ -90,20 +98,42 @@ export function getSchemaByType(type: ts.Type, config: GetSchemaConfig): SchemaO
 }
 
 function addRefTypeSchema(type: ts.InterfaceType, config: GetSchemaConfig): ReferenceObject {
-  const { schemaObjects } = config;
-  let typeName = `${type.symbol.escapedName}`;
-  const schema = getSchemaByType(type, { ...config, extendClass: true });
-  const hashCode = getHashCode(schema);
-  if (schemaObjects[typeName] && schemaObjects[typeName].hashCode !== hashCode) {
+  const { schemaObjects, typeCache } = config;
+
+  const cache = typeCache.find(c => c.type === type);
+  if (cache) {
+    return {
+      $ref: `#/components/schemas/${cache.schemaName}`,
+    };
+  }
+
+  const typeName = `${type.symbol.escapedName}`;
+
+  let schemaName = typeName;
+  if (schemaObjects[typeName]) {
     let i = 1;
     while (schemaObjects[`${typeName}_${i}`]) {
       i++;
     }
-    typeName = i ? `${typeName}_${i}` : typeName;
+    schemaName = `${typeName}_${i}`;
   }
-  schemaObjects[typeName] = { ...schema, hashCode };
+
+  const cacheData: TypeCache = { typeName, schemaName, type };
+  typeCache.push(cacheData);
+
+  const schema = getSchemaByType(type, { ...config, extendClass: true });
+  const hashCode = getHashCode(schema);
+
+  const cacheIndex = typeCache.findIndex(c => c.hashCode === hashCode && c.typeName === typeName);
+  if (cacheIndex >= 0) {
+    typeCache.splice(typeCache.findIndex(c => c.schemaName === schemaName), 1);
+    schemaName = cache.schemaName;
+  } else {
+    cacheData.hashCode = hashCode;
+    schemaObjects[schemaName] = schema;
+  }
   return {
-    $ref: `#/components/schemas/${typeName}`,
+    $ref: `#/components/schemas/${schemaName}`,
   };
 }
 
