@@ -1,3 +1,7 @@
+# 0.3.30 / 2019-09-03
+
+- update: support circular dependencies for transform.
+
 # 0.3.28 / 2019-06-27
 
 - fix: oas3 data with reference type.
