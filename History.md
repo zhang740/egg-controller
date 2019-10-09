@@ -1,3 +1,7 @@
+# 0.3.31 / 2019-10-09
+
+- fix: parameter data to schema.
+
 # 0.3.30 / 2019-09-03
 
 - update: support circular dependencies for transform.
