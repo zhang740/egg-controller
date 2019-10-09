@@ -75,12 +75,23 @@ export function convertToOpenAPI(
         }
 
         function convertValidateToSchema(validateType: any) {
+          if (validateType === 'string') {
+            return {
+              type: 'string',
+            };
+          }
+          if (validateType === 'int' || validateType === 'number') {
+            return {
+              type: 'number',
+            };
+          }
           if (validateType.type === 'object' && validateType.rule) {
             let properties: any = {};
             const required = [];
             Object.keys(validateType.rule).forEach(key => {
-              properties[key] = convertValidateToSchema(validateType.rule[key]);
-              if (validateType.rule[key].required) {
+              const rule = validateType.rule[key];
+              properties[key] = convertValidateToSchema(rule);
+              if (rule.required !== false) {
                 required.push(key);
               }
             });
@@ -100,7 +111,7 @@ export function convertToOpenAPI(
             type: validateType.type,
             items: validateType.itemType
               ? validateType.itemType === 'object'
-                ? convertValidateToSchema(validateType.rule)
+                ? convertValidateToSchema({ type: 'object', rule: validateType.rule })
                 : { type: validateType.itemType }
               : undefined,
             enum: Array.isArray(validateType.values)
@@ -126,8 +137,8 @@ export function convertToOpenAPI(
               items:
                 type === 'Array'
                   ? {
-                    type: 'object',
-                  }
+                      type: 'object',
+                    }
                   : undefined,
             } as SchemaObject;
           }
@@ -178,7 +189,8 @@ export function convertToOpenAPI(
         let responseSchema = item.schemas.response || {};
         const refTypeName: string = responseSchema.$ref;
         if (refTypeName) {
-          const definition = item.schemas.components[refTypeName.replace('#/components/schemas/', '')];
+          const definition =
+            item.schemas.components[refTypeName.replace('#/components/schemas/', '')];
           if (definition) {
             responseSchema = { $ref: refTypeName };
           } else {
@@ -204,16 +216,16 @@ export function convertToOpenAPI(
           description: item.description,
           parameters: inParam.length
             ? inParam.map(p => {
-              const source =
-                p.source === 'Header' ? 'header' : p.source === 'Param' ? 'path' : 'query';
-              return {
-                name: p.paramName,
-                in: source,
-                required:
-                  source === 'path' || p.required || getValue(() => p.validateType.required),
-                schema: getTypeSchema(p),
-              } as ParameterObject;
-            })
+                const source =
+                  p.source === 'Header' ? 'header' : p.source === 'Param' ? 'path' : 'query';
+                return {
+                  name: p.paramName,
+                  in: source,
+                  required:
+                    source === 'path' || p.required || getValue(() => p.validateType.required),
+                  schema: getTypeSchema(p),
+                } as ParameterObject;
+              })
             : undefined,
           requestBody,
           responses,
