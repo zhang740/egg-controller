@@ -107,6 +107,12 @@ export function convertToOpenAPI(
             };
           }
 
+          if (validateType.type === 'enum') {
+            return {
+              type: 'string',
+            };
+          }
+
           return {
             type: validateType.type,
             items: validateType.itemType
