@@ -1,3 +1,7 @@
+# 0.3.32 / 2019-11-28
+
+- update: transfomer support Set<?>
+
 # 0.3.31 / 2019-10-09
 
 - fix: parameter data to schema.
