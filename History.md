@@ -1,3 +1,7 @@
+# 0.3.33 / 2019-11-29
+
+- update: support index type for OAS.
+
 # 0.3.32 / 2019-11-28
 
 - update: transfomer support Set<?>
