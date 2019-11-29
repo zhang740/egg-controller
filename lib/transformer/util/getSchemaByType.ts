@@ -126,7 +126,10 @@ function addRefTypeSchema(type: ts.InterfaceType, config: GetSchemaConfig): Refe
 
   const cacheIndex = typeCache.findIndex(c => c.hashCode === hashCode && c.typeName === typeName);
   if (cacheIndex >= 0) {
-    typeCache.splice(typeCache.findIndex(c => c.schemaName === schemaName), 1);
+    typeCache.splice(
+      typeCache.findIndex(c => c.schemaName === schemaName),
+      1
+    );
     schemaName = cache.schemaName;
   } else {
     cacheData.hashCode = hashCode;
@@ -150,6 +153,10 @@ function extendClass(
     properties: {},
     required: [],
   };
+  const indexType = type.getNumberIndexType() || type.getStringIndexType();
+  if (indexType) {
+    schema.additionalProperties = getSchemaByType(indexType, config);
+  }
   type
     .getProperties()
     .filter(
