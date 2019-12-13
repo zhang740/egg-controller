@@ -78,6 +78,7 @@
     "autod": "autod",
     "ts": "rimraf app/**/*.js lib/**/*.js app/**/*.d.ts lib/**/*.d.ts && tsc",
     "debug": "tsc -w -p tsconfig.debug.json",
+    "dev": "tsc -w",
     "prepublish": "npm run test && npm run ts",
     "postpublish": "node scripts/published.js"
   },

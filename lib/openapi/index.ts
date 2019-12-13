@@ -78,11 +78,13 @@ export function convertToOpenAPI(
           if (validateType === 'string') {
             return {
               type: 'string',
+              description: validateType.description,
             };
           }
           if (validateType === 'int' || validateType === 'number') {
             return {
               type: 'number',
+              description: validateType.description,
             };
           }
           if (validateType.type === 'object' && validateType.rule) {
@@ -96,9 +98,10 @@ export function convertToOpenAPI(
               }
             });
 
-            const typeName = `GenType_${typeCount++}`;
+            const typeName = validateType.schemaName || `GenType_${typeCount++}`;
             builder.addSchema(typeName, {
               type: validateType.type,
+              description: validateType.description,
               required: required,
               properties,
             });
@@ -110,11 +113,13 @@ export function convertToOpenAPI(
           if (validateType.type === 'enum') {
             return {
               type: 'string',
+              description: validateType.description,
             };
           }
 
           return {
             type: validateType.type,
+            description: validateType.description,
             items: validateType.itemType
               ? validateType.itemType === 'object'
                 ? convertValidateToSchema({ type: 'object', rule: validateType.rule })
@@ -140,6 +145,7 @@ export function convertToOpenAPI(
             // TODO complex type process
             return {
               type: isSimpleType ? type.toLowerCase() : 'object',
+              description: p.validateType ? p.validateType.description : undefined,
               items:
                 type === 'Array'
                   ? {
@@ -227,6 +233,7 @@ export function convertToOpenAPI(
                 return {
                   name: p.paramName,
                   in: source,
+                  description: p.validateType ? p.validateType.description : '',
                   required:
                     source === 'path' || p.required || getValue(() => p.validateType.required),
                   schema: getTypeSchema(p),
