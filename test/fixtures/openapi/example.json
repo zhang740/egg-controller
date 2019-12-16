@@ -47,7 +47,8 @@
             "name": "q",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "query"
             }
           }
         ],
@@ -132,7 +133,7 @@
                 "type": "object",
                 "properties": {
                   "q": {
-                    "type": "object"
+                    "$ref": "#/components/schemas/ReqData"
                   }
                 }
               }
@@ -153,7 +154,23 @@
     }
   },
   "components": {
-    "schemas": {},
+    "schemas": {
+      "ReqData": {
+        "type": "object",
+        "required": [
+          "a",
+          "b"
+        ],
+        "properties": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "number"
+          }
+        }
+      }
+    },
     "responses": {},
     "parameters": {},
     "examples": {},

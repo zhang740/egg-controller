@@ -7,7 +7,18 @@ export class HomeController extends Controller {
     return 'ok';
   }
 
-  @route('/api/query', { name: 'get with query: q' })
+  @route('/api/query', {
+    name: 'get with query: q',
+    validateMetaInfo: [
+      {
+        name: 'q',
+        rule: {
+          type: 'string',
+          description: 'query'
+        }
+      }
+    ]
+  })
   getQuery(q: string) {
     return 'ok';
   }
@@ -22,8 +33,29 @@ export class HomeController extends Controller {
     return 'ok';
   }
 
-  @route('POST /api/body', { name: 'post with body: q' })
+  @route('POST /api/body', {
+    name: 'post with body: q',
+    validateMetaInfo: [
+      {
+        name: 'q',
+        rule: {
+          schemaName: 'ReqData',
+          type: 'object',
+          rule: {
+            a: {
+              type: 'string'
+            },
+            b: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    ]
+  })
   post(q: { a: string, b: number }) {
     return 'ok';
   }
+
+
 }
