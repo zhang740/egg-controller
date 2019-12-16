@@ -25,7 +25,6 @@ export function route<T = any>(
 
   return function (target: any, key: string) {
     const CtrlType = target.constructor;
-    // console.log(CtrlType);
     const typeGlobalName = getGlobalType(CtrlType);
 
     const paramTypes = Reflect.getMetadata('design:paramtypes', target, key) || [];
@@ -45,7 +44,6 @@ export function route<T = any>(
     /** from transformer/response-schema */
     const responseSchema = Reflect.getMetadata(RESPONSE_SCHEMA_KEY, target, key);
     const schemaDefinition = Reflect.getMetadata(SCHEMA_DEFINITION_KEY, target, key);
-    // console.log(Reflect.getMetadata('design:returntype', target, key));
 
     const methodRules = getMethodRules(target, key);
     const typeInfo: RouteType = {
