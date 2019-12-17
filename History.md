@@ -1,3 +1,7 @@
+# 0.3.34 / 2019-12-17
+
+- update: transformer support parse params for route.
+
 # 0.3.33 / 2019-11-29
 
 - update: support index type for OAS.
