@@ -122,7 +122,7 @@ export function convertToOpenAPI(
             description: validateType.description,
             items: validateType.itemType
               ? validateType.itemType === 'object'
-                ? convertValidateToSchema({ type: 'object', rule: validateType.rule })
+                ? convertValidateToSchema({ type: 'object', rule: validateType.rule, schemaName: validateType.schemaName })
                 : { type: validateType.itemType }
               : undefined,
             enum: Array.isArray(validateType.values)
