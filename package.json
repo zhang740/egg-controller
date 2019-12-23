@@ -1,6 +1,6 @@
 {
   "name": "egg-controller",
-  "version": "0.3.33",
+  "version": "0.3.34",
   "description": "controller for egg.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -63,7 +63,7 @@
     "rimraf": "^2.6.2",
     "supertest": "^3.0.0",
     "tslint": "^5.9.1",
-    "typescript": "^3.1.2"
+    "typescript": "^3.7.3"
   },
   "engines": {
     "node": ">=8.9.0"

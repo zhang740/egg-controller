@@ -3,13 +3,13 @@ import { SchemasObject, SchemaObject } from 'openapi3-ts';
 import { getSchemaByType, TypeCache } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
 import { getValue, isDecoratorNameInclude, getClsMethodKey, walker } from '../util';
-import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY } from '../const';
+import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY, REQUEST_SCHEMA_KEY } from '../const';
 import { EmitFlags } from 'typescript';
 
 interface FileMetaType {
   methodDefine: {
     [cls_method: string]: {
-      // TODO 参数类型定义
+      // 参数类型定义
       paramSchema: {
         [param: string]: SchemaObject;
       };
@@ -70,8 +70,25 @@ export function before(
             (cbNode as any).symbol.escapedName
           );
 
+          const config = {
+            typeChecker,
+            schemaObjects: fileData.schemaObjects,
+            typeCache: fileData.typeCache,
+          };
+
           const type = typeChecker.getTypeAtLocation(cbNode);
-          const returnType = typeChecker.getReturnTypeOfSignature(type.getCallSignatures()[0]);
+          const callSignatures = type.getCallSignatures()[0];
+
+          // params parser
+          const parameters = callSignatures.getParameters();
+          const paramSchema = parameters.reduce((s, p) => {
+            const paramType = typeChecker.getTypeAtLocation(p.valueDeclaration);
+            s[`${p.escapedName}`] = getSchemaByType(paramType, config);
+            return s;
+          }, {});
+
+          // returnType parser
+          const returnType = typeChecker.getReturnTypeOfSignature(callSignatures);
           let realType: SchemaObject;
           if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
             realType = getSchemaByType((returnType as any).typeArguments[0], {
@@ -80,15 +97,12 @@ export function before(
               typeCache: fileData.typeCache,
             });
           } else {
-            realType = getSchemaByType(returnType as ts.ObjectType, {
-              typeChecker,
-              schemaObjects: fileData.schemaObjects,
-              typeCache: fileData.typeCache,
-            });
+            realType = getSchemaByType(returnType as ts.ObjectType, config);
           }
+
           if (!fileData.methodDefine[clsMethod]) {
             fileData.methodDefine[clsMethod] = {
-              paramSchema: {},
+              paramSchema,
               responseSchema: realType,
             };
           }
@@ -108,19 +122,12 @@ export function after(_: ts.TransformationContext, sourceFile: ts.SourceFile) {
         const methodName = getValue(() => (node as any).expression.arguments[2].text);
 
         if (className && methodName) {
-          const responseSchema = getValue(
-            () => fileData.methodDefine[getClsMethodKey(className, methodName)].responseSchema
+          const methodSchema = getValue(
+            () => fileData.methodDefine[getClsMethodKey(className, methodName)]
           );
-          if (responseSchema) {
-            (node as any).expression.arguments[0].elements = (node as any).expression.arguments[0].elements.concat(
-              ts.createCall(
-                ts.setEmitFlags(
-                  ts.createIdentifier('__metadata'),
-                  EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
-                ),
-                undefined,
-                [ts.createLiteral(RESPONSE_SCHEMA_KEY), convert(responseSchema)]
-              ),
+
+          if (methodSchema) {
+            const addData = [
               ts.createCall(
                 ts.setEmitFlags(
                   ts.createIdentifier('__metadata'),
@@ -128,7 +135,37 @@ export function after(_: ts.TransformationContext, sourceFile: ts.SourceFile) {
                 ),
                 undefined,
                 [ts.createLiteral(SCHEMA_DEFINITION_KEY), ts.createIdentifier('__SchemaDefinition')]
-              )
+              ),
+            ];
+
+            if (methodSchema.paramSchema) {
+              addData.unshift(
+                ts.createCall(
+                  ts.setEmitFlags(
+                    ts.createIdentifier('__metadata'),
+                    EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
+                  ),
+                  undefined,
+                  [ts.createLiteral(REQUEST_SCHEMA_KEY), convert(methodSchema.paramSchema)]
+                )
+              );
+            }
+
+            if (methodSchema.responseSchema) {
+              addData.unshift(
+                ts.createCall(
+                  ts.setEmitFlags(
+                    ts.createIdentifier('__metadata'),
+                    EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
+                  ),
+                  undefined,
+                  [ts.createLiteral(RESPONSE_SCHEMA_KEY), convert(methodSchema.responseSchema)]
+                )
+              );
+            }
+
+            (node as any).expression.arguments[0].elements = (node as any).expression.arguments[0].elements.concat(
+              addData
             );
           }
         }
