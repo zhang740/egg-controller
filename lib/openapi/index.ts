@@ -233,6 +233,8 @@ export function convertToOpenAPI(
                 return {
                   name: p.paramName,
                   in: source,
+                  default: p.validateType ? p.validateType.default : undefined,
+                  description: p.validateType ? p.validateType.description : undefined,
                   required:
                     source === 'path' || p.required || getValue(() => p.validateType.required),
                   schema: getTypeSchema(p),
