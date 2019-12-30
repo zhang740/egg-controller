@@ -163,7 +163,9 @@ function extendClass(
       symbol =>
         !symbol.valueDeclaration ||
         !symbol.valueDeclaration.modifiers ||
-        symbol.valueDeclaration.modifiers.some(m => !!((m as any) & ts.ModifierFlags.Public))
+        symbol.valueDeclaration.modifiers.some(m => {
+          return !(m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword);
+        })
     )
     .forEach(symbol => {
       const escapedName = `${symbol.escapedName}`;
