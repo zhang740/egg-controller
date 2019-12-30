@@ -1,3 +1,7 @@
+# 0.3.35 / 2019-12-30
+
+- fix: ts transformer parse readonly.
+
 # 0.3.34 / 2019-12-17
 
 - update: transformer support parse params for route.
