@@ -1,3 +1,7 @@
+# 0.3.36 / 2019-12-31
+
+- fix: allow private readonly.
+
 # 0.3.35 / 2019-12-30
 
 - fix: ts transformer parse readonly.
