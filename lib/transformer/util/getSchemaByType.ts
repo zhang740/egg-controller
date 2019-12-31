@@ -163,8 +163,8 @@ function extendClass(
       symbol =>
         !symbol.valueDeclaration ||
         !symbol.valueDeclaration.modifiers ||
-        symbol.valueDeclaration.modifiers.some(m => {
-          return !(m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword);
+        !symbol.valueDeclaration.modifiers.some(m => {
+          return [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword].includes(m.kind);
         })
     )
     .forEach(symbol => {
