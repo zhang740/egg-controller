@@ -69,10 +69,19 @@ export function before(
 
           //#region find schema prop
           let expression = decorator.expression as ts.CallExpression;
-          if (!expression.arguments.length) {
-            expression.arguments = ts.createNodeArray([ts.createObjectLiteral([], false)]);
+          if (
+            !expression.arguments.length ||
+            !ts.isObjectLiteralExpression(expression.arguments[expression.arguments.length - 1])
+          ) {
+            expression.arguments = ts.createNodeArray([
+              ...expression.arguments,
+              ts.createObjectLiteral([], false),
+            ]);
           }
-          const routeArg = expression.arguments[0] as ts.ObjectLiteralExpression;
+          const routeArg = expression.arguments[
+            expression.arguments.length - 1
+          ] as ts.ObjectLiteralExpression;
+
           const schemaProp = getField(routeArg, 'schema');
           //#endregion
 
