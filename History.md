@@ -1,3 +1,7 @@
+# 0.3.37 / 2020-05-13
+
+- update: transformer compatible with ts 3.9
+
 # 0.3.36 / 2019-12-31
 
 - fix: allow private readonly.
