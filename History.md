@@ -1,3 +1,7 @@
+# 0.3.38 / 2020-05-13
+
+- fix: new transformer.
+
 # 0.3.37 / 2020-05-13
 
 - update: transformer compatible with ts 3.9
