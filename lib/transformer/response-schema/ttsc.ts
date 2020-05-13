@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { SchemasObject, SchemaObject } from 'openapi3-ts';
 import { getSchemaByType, TypeCache } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
-import { getValue, isDecoratorNameInclude, walker } from '../util';
+import { getValue, isDecoratorNameInclude, walker, getClsMethodKey } from '../util';
 
 interface FileMetaType {
   methodDefine: {
@@ -67,6 +67,12 @@ export function before(
             return (dec.expression as any).expression.escapedText === 'route';
           });
 
+          const clsName = (node as ts.ClassDeclaration).name.text;
+          const clsMethod = getClsMethodKey(
+            (cbNode.parent as any).symbol.escapedName,
+            (cbNode as any).symbol.escapedName
+          );
+
           //#region find schema prop
           let expression = decorator.expression as ts.CallExpression;
           if (
@@ -96,38 +102,46 @@ export function before(
 
           // params parser
           if (!hasField(schemaProp, 'requestBody')) {
-            const parameters = callSignatures.getParameters();
-            const paramSchema = parameters.reduce((s, p) => {
-              const paramType = typeChecker.getTypeAtLocation(p.valueDeclaration);
-              s[`${p.escapedName}`] = getSchemaByType(paramType, config);
-              return s;
-            }, {});
-            schemaProp.properties = ts.createNodeArray([
-              ...schemaProp.properties,
-              ts.createPropertyAssignment(
-                'requestBody',
-                convert({ type: 'object', properties: paramSchema })
-              ),
-            ]);
+            try {
+              const parameters = callSignatures.getParameters();
+              const paramSchema = parameters.reduce((s, p) => {
+                const paramType = typeChecker.getTypeAtLocation(p.valueDeclaration);
+                s[`${p.escapedName}`] = getSchemaByType(paramType, config);
+                return s;
+              }, {});
+              schemaProp.properties = ts.createNodeArray([
+                ...schemaProp.properties,
+                ts.createPropertyAssignment(
+                  'requestBody',
+                  convert({ type: 'object', properties: paramSchema })
+                ),
+              ]);
+            } catch (error) {
+              console.log('warn:', `parse ${clsName}.${clsMethod} params fail!`, error);
+            }
           }
 
           // returnType parser
           if (!hasField(schemaProp, 'response')) {
-            const returnType = typeChecker.getReturnTypeOfSignature(callSignatures);
-            let responseSchema: SchemaObject;
-            if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
-              responseSchema = getSchemaByType((returnType as any).typeArguments[0], {
-                typeChecker,
-                schemaObjects: fileData.schemaObjects,
-                typeCache: fileData.typeCache,
-              });
-            } else {
-              responseSchema = getSchemaByType(returnType as ts.ObjectType, config);
+            try {
+              const returnType = typeChecker.getReturnTypeOfSignature(callSignatures);
+              let responseSchema: SchemaObject;
+              if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
+                responseSchema = getSchemaByType((returnType as any).typeArguments[0], {
+                  typeChecker,
+                  schemaObjects: fileData.schemaObjects,
+                  typeCache: fileData.typeCache,
+                });
+              } else {
+                responseSchema = getSchemaByType(returnType as ts.ObjectType, config);
+              }
+              schemaProp.properties = ts.createNodeArray([
+                ...schemaProp.properties,
+                ts.createPropertyAssignment('response', convert(responseSchema)),
+              ]);
+            } catch (error) {
+              console.log('warn:', `parse ${clsName}.${clsMethod} returnType fail!`, error);
             }
-            schemaProp.properties = ts.createNodeArray([
-              ...schemaProp.properties,
-              ts.createPropertyAssignment('response', convert(responseSchema)),
-            ]);
           }
 
           if (!hasField(schemaProp, 'components')) {
