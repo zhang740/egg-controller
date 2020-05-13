@@ -16,6 +16,6 @@
     "inlineSourceMap": false,
     "importHelpers": true
   },
-  "exclude": ["test"],
+  "exclude": ["test", "node_modules*"],
   "compileOnSave": true
 }

@@ -32,6 +32,8 @@ export interface RouteMetadataType<ExtType = any> {
       type: string | any;
       required?: boolean;
       default?: any;
+      schemaName?: string;
+      description?: string;
       [other: string]: any;
     };
   }[];
