@@ -2,9 +2,7 @@ import * as ts from 'typescript';
 import { SchemasObject, SchemaObject } from 'openapi3-ts';
 import { getSchemaByType, TypeCache } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
-import { getValue, isDecoratorNameInclude, getClsMethodKey, walker } from '../util';
-import { RESPONSE_SCHEMA_KEY, SCHEMA_DEFINITION_KEY, REQUEST_SCHEMA_KEY } from '../const';
-import { EmitFlags } from 'typescript';
+import { getValue, isDecoratorNameInclude, walker } from '../util';
 
 interface FileMetaType {
   methodDefine: {
@@ -65,10 +63,18 @@ export function before(
     .forEach(node => {
       node.forEachChild(cbNode => {
         if (isDecoratorNameInclude(cbNode, 'route')) {
-          const clsMethod = getClsMethodKey(
-            (cbNode.parent as any).symbol.escapedName,
-            (cbNode as any).symbol.escapedName
-          );
+          const decorator = cbNode.decorators.find(dec => {
+            return (dec.expression as any).expression.escapedText === 'route';
+          });
+
+          //#region find schema prop
+          let expression = decorator.expression as ts.CallExpression;
+          if (!expression.arguments.length) {
+            expression.arguments = ts.createNodeArray([ts.createObjectLiteral([], false)]);
+          }
+          const routeArg = expression.arguments[0] as ts.ObjectLiteralExpression;
+          const schemaProp = getField(routeArg, 'schema');
+          //#endregion
 
           const config = {
             typeChecker,
@@ -80,31 +86,46 @@ export function before(
           const callSignatures = type.getCallSignatures()[0];
 
           // params parser
-          const parameters = callSignatures.getParameters();
-          const paramSchema = parameters.reduce((s, p) => {
-            const paramType = typeChecker.getTypeAtLocation(p.valueDeclaration);
-            s[`${p.escapedName}`] = getSchemaByType(paramType, config);
-            return s;
-          }, {});
-
-          // returnType parser
-          const returnType = typeChecker.getReturnTypeOfSignature(callSignatures);
-          let realType: SchemaObject;
-          if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
-            realType = getSchemaByType((returnType as any).typeArguments[0], {
-              typeChecker,
-              schemaObjects: fileData.schemaObjects,
-              typeCache: fileData.typeCache,
-            });
-          } else {
-            realType = getSchemaByType(returnType as ts.ObjectType, config);
+          if (!hasField(schemaProp, 'requestBody')) {
+            const parameters = callSignatures.getParameters();
+            const paramSchema = parameters.reduce((s, p) => {
+              const paramType = typeChecker.getTypeAtLocation(p.valueDeclaration);
+              s[`${p.escapedName}`] = getSchemaByType(paramType, config);
+              return s;
+            }, {});
+            schemaProp.properties = ts.createNodeArray([
+              ...schemaProp.properties,
+              ts.createPropertyAssignment(
+                'requestBody',
+                convert({ type: 'object', properties: paramSchema })
+              ),
+            ]);
           }
 
-          if (!fileData.methodDefine[clsMethod]) {
-            fileData.methodDefine[clsMethod] = {
-              paramSchema,
-              responseSchema: realType,
-            };
+          // returnType parser
+          if (!hasField(schemaProp, 'response')) {
+            const returnType = typeChecker.getReturnTypeOfSignature(callSignatures);
+            let responseSchema: SchemaObject;
+            if (getValue(() => returnType.symbol.escapedName) === 'Promise') {
+              responseSchema = getSchemaByType((returnType as any).typeArguments[0], {
+                typeChecker,
+                schemaObjects: fileData.schemaObjects,
+                typeCache: fileData.typeCache,
+              });
+            } else {
+              responseSchema = getSchemaByType(returnType as ts.ObjectType, config);
+            }
+            schemaProp.properties = ts.createNodeArray([
+              ...schemaProp.properties,
+              ts.createPropertyAssignment('response', convert(responseSchema)),
+            ]);
+          }
+
+          if (!hasField(schemaProp, 'components')) {
+            schemaProp.properties = ts.createNodeArray([
+              ...schemaProp.properties,
+              ts.createPropertyAssignment('components', ts.createIdentifier('__SchemaDefinition')),
+            ]);
           }
         }
       });
@@ -114,64 +135,6 @@ export function before(
 export function after(_: ts.TransformationContext, sourceFile: ts.SourceFile) {
   const fileData = METADATA[sourceFile.fileName];
   if (fileData) {
-    sourceFile.statements.forEach(node => {
-      if (ts.isExpressionStatement(node) && (node as any).expression.arguments) {
-        const className = getValue(
-          () => (node as any).expression.arguments[1].expression.escapedText
-        );
-        const methodName = getValue(() => (node as any).expression.arguments[2].text);
-
-        if (className && methodName) {
-          const methodSchema = getValue(
-            () => fileData.methodDefine[getClsMethodKey(className, methodName)]
-          );
-
-          if (methodSchema) {
-            const addData = [
-              ts.createCall(
-                ts.setEmitFlags(
-                  ts.createIdentifier('__metadata'),
-                  EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
-                ),
-                undefined,
-                [ts.createLiteral(SCHEMA_DEFINITION_KEY), ts.createIdentifier('__SchemaDefinition')]
-              ),
-            ];
-
-            if (methodSchema.paramSchema) {
-              addData.unshift(
-                ts.createCall(
-                  ts.setEmitFlags(
-                    ts.createIdentifier('__metadata'),
-                    EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
-                  ),
-                  undefined,
-                  [ts.createLiteral(REQUEST_SCHEMA_KEY), convert(methodSchema.paramSchema)]
-                )
-              );
-            }
-
-            if (methodSchema.responseSchema) {
-              addData.unshift(
-                ts.createCall(
-                  ts.setEmitFlags(
-                    ts.createIdentifier('__metadata'),
-                    EmitFlags.HelperName | EmitFlags.AdviseOnEmitNode
-                  ),
-                  undefined,
-                  [ts.createLiteral(RESPONSE_SCHEMA_KEY), convert(methodSchema.responseSchema)]
-                )
-              );
-            }
-
-            (node as any).expression.arguments[0].elements = (node as any).expression.arguments[0].elements.concat(
-              addData
-            );
-          }
-        }
-      }
-    });
-
     sourceFile.statements = ts.createNodeArray([
       ts.createVariableStatement(
         [],
@@ -189,4 +152,27 @@ export function after(_: ts.TransformationContext, sourceFile: ts.SourceFile) {
       ...sourceFile.statements,
     ]);
   }
+}
+
+function hasField(config: ts.ObjectLiteralExpression, fieldName: string) {
+  return !!config.properties.find(p => {
+    return ts.isIdentifier(p.name) && p.name.escapedText === fieldName;
+  }) as any;
+}
+
+function getField(config: ts.ObjectLiteralExpression, fieldName: string) {
+  let field: ts.ObjectLiteralExpression;
+  field = config.properties.find(p => {
+    return ts.isIdentifier(p.name) && p.name.escapedText === fieldName;
+  }) as any;
+  if (!field) {
+    field = ts.createObjectLiteral();
+    config.properties = ts.createNodeArray([
+      ...config.properties,
+      ts.createPropertyAssignment(fieldName, field),
+    ]);
+  } else {
+    field = (field as any).initializer;
+  }
+  return field;
 }
