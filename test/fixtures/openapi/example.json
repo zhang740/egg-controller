@@ -82,6 +82,42 @@
         }
       }
     },
+    "/api/complex": {
+      "post": {
+        "operationId": "complex",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "data": {
+                    "type": "object"
+                  },
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "default"
+          }
+        },
+        "summary": "complex",
+        "tags": [
+          "HomeController"
+        ]
+      }
+    },
     "/api/complex/{q}": {
       "get": {
         "operationId": "getComplex",

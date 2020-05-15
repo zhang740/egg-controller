@@ -1,6 +1,16 @@
 import { Controller } from 'egg';
 import { route } from '../../../../../lib';
 
+interface RespModel {
+  a: string;
+  b?: { c: number };
+}
+
+interface RequestModel {
+  a: string;
+  b: { c?: number };
+}
+
 export class HomeController extends Controller {
   @route('/api/normal', { name: 'get' })
   getNormal() {
@@ -23,7 +33,12 @@ export class HomeController extends Controller {
   }
 
   @route('POST /api/body', { name: 'post with body: q' })
-  post(q: { a: string, b: number }) {
+  post(q: { a: string; b: number }) {
     return 'ok';
+  }
+
+  @route('POST /api/complex', { name: 'complex' })
+  complex(id: string, data: RequestModel) {
+    return {} as RespModel;
   }
 }
