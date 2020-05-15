@@ -1,3 +1,7 @@
+# 0.3.40 / 2020-05-15
+
+- fix: transformer typo.
+
 # 0.3.39 / 2020-05-13
 
 - tmp: trycatch parser fail.
