@@ -88,7 +88,7 @@ export function before(
             expression.arguments.length - 1
           ] as ts.ObjectLiteralExpression;
 
-          const schemaProp = getField(routeArg, 'schema');
+          const schemaProp = getField(routeArg, 'schemas');
           //#endregion
 
           const config = {
