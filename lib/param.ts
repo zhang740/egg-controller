@@ -170,8 +170,8 @@ function formatArg(argValue: any, validateType: any) {
 }
 
 async function getArgs(ctx: Context, typeInfo: RouteType) {
-  let resData: any;
-  if (typeInfo.encrypt) {
+  let resData: any = {};
+  if (typeInfo.encrypt === true) {
     const reqData = ctx.request.body && ctx.request.body['encrypt'];
     if (!reqData) {
       throw new BadRequestError('encrypt param error');
@@ -183,13 +183,14 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
         .privateDecrypt(formatKey(config.privateKey, privateKeyType), new Buffer(reqData))
         .toString()
     );
-  } else {
-    resData = {
-      ...(ctx.request.body || {}),
-      ...(ctx.queries || {}),
-      ...(ctx.query || {}),
-      ...(ctx.params || {}),
-    };
+  }
+  const param = ctx.params || {};
+  const query = ctx.query || {};
+  const queries = ctx.queries || {};
+  const body = ctx.request.body || {};
+
+  if (typeof typeInfo.encrypt === 'object' && typeInfo.encrypt.everyParam) {
+    // TODO decrypt key values of param, query, queries, body
   }
 
   return await Promise.all(
@@ -197,11 +198,32 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
       const name = p.name;
       let argValue = undefined;
 
-      // 获取参数值
+      const isArrayType =
+        typeof p.type === 'string' ? p.type.toLowerCase() === 'array' : p.type === Array;
+
+      // custom getter
       if (p.getter) {
         argValue = await p.getter(ctx, name, p.type);
-      } else {
+      }
+      // resData first
+      else if (name in resData) {
         argValue = resData[name];
+      }
+      // param
+      else if (name in param) {
+        argValue = param[name];
+      }
+      // query if not array
+      else if (name in query && !isArrayType) {
+        argValue = query[name];
+      }
+      // queries if array
+      // bracket /xxx?a[]=1&a[]=2 => a = [1, 2]
+      // compatible with egg https://eggjs.org/zh-cn/basics/controller.html#queries
+      else if ((`${name}[]` in queries || name in queries) && isArrayType) {
+        argValue = queries[`${name}[]`] || queries[name];
+      } else if (name in body) {
+        argValue = body[name];
       }
 
       if (argValue === undefined) {

@@ -17,7 +17,7 @@ export interface RouteMetadataType<ExtType = any> {
   description?: string;
   /** before middleware of router */
   middleware?: MiddlewareType[];
-  auth?: (typeof BaseAuth)[];
+  auth?: typeof BaseAuth[];
   /** router extinfo */
   extInfo?: ExtType;
   /** callback of the router function throw error */
@@ -47,7 +47,7 @@ export interface RouteMetadataType<ExtType = any> {
     components?: { [schema: string]: SchemaObject };
   };
   /** RSA encrypt */
-  encrypt?: boolean;
+  encrypt?: { everyParam: boolean } | boolean;
 
   /** close Tracking, default: false */
   noTracking?: boolean;
