@@ -1,3 +1,7 @@
+# 0.3.41 / 2020-05-22
+
+- update: support egg array param.
+
 # 0.3.40 / 2020-05-15
 
 - fix: transformer typo.
