@@ -199,7 +199,13 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
       let argValue = undefined;
 
       const isArrayType =
-        typeof p.type === 'string' ? p.type.toLowerCase() === 'array' : p.type === Array;
+        getValue(() => p.schema.type === 'array') || // from schema
+        getValue(() => p.validateType.type === 'array') || // from validateType
+        (p.type // from ts metadata type
+          ? typeof p.type === 'string'
+            ? p.type.toLowerCase() === 'array'
+            : p.type === Array
+          : false);
 
       // custom getter
       if (p.getter) {

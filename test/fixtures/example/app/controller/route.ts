@@ -2,7 +2,6 @@ import { route } from '../../../../../lib';
 import { NotFoundError } from '../../../../../lib/error';
 
 export class RouteController {
-
   @route({ url: '/home/index', name: '首页' })
   async index() {
     return 'homeIndex';
@@ -29,28 +28,46 @@ export class RouteController {
   }
 
   @route({ url: '/home/nodata', name: '无数据' })
-  async noData() {
-  }
+  async noData() {}
 
   @route({ url: '/home/notfound', name: '404' })
   async notFound() {
     throw new NotFoundError();
   }
 
-  @route({ url: (config) => `/home/${config.env}`, name: '根据config生成url' })
+  @route({ url: config => `/home/${config.env}`, name: '根据config生成url' })
   async customByconfig() {
     return 'customByconfig';
   }
 
   /** need the type info 'number' of array */
   @route('/home/getArray', {
-    name: 'array', validateMetaInfo: [{
-      name: 'id', rule: {
-        type: 'array', itemType: 'number'
-      }
-    }]
+    name: 'array',
+    validateMetaInfo: [
+      {
+        name: 'id',
+        rule: {
+          type: 'array',
+          itemType: 'number',
+        },
+      },
+    ],
+    schemas: {
+      params: [
+        {
+          name: 'id3',
+          in: 'query',
+          schema: {
+            type: 'array',
+            items: {
+              type: 'number',
+            },
+          },
+        },
+      ],
+    },
   })
-  async getArray(id: number[]) {
-    return { id };
+  async getArray(id: any, id2: number[], id3: any) {
+    return { id, id2, id3 };
   }
 }

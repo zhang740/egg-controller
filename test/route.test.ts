@@ -17,17 +17,11 @@ describe('test/lib/route.test.js', () => {
   afterEach(mm.restore);
 
   it('should GET /home/index', () => {
-    return request(app.callback())
-      .get('/home/index')
-      .expect('homeIndex')
-      .expect(200);
+    return request(app.callback()).get('/home/index').expect('homeIndex').expect(200);
   });
 
   it('should GET /home/sort', () => {
-    return request(app.callback())
-      .get('/home/sort')
-      .expect('homeSort')
-      .expect(200);
+    return request(app.callback()).get('/home/sort').expect('homeSort').expect(200);
   });
 
   it('should POST /home/post', () => {
@@ -51,43 +45,36 @@ describe('test/lib/route.test.js', () => {
   });
 
   it('should GET /route/default', () => {
-    return request(app.callback())
-      .get('/route/default')
-      .expect(200)
-      .expect('ok');
+    return request(app.callback()).get('/route/default').expect(200).expect('ok');
   });
 
   it('should GET /home/nodata', () => {
-    return request(app.callback())
-      .get('/home/nodata')
-      .expect(204);
+    return request(app.callback()).get('/home/nodata').expect(204);
   });
 
   it('should GET /notfound', () => {
-    return request(app.callback())
-      .get('/notfound')
-      .expect(404);
+    return request(app.callback()).get('/notfound').expect(404);
   });
 
   it('should GET /_notfound', () => {
-    return request(app.callback())
-      .get('/_notfound')
-      .expect(404);
+    return request(app.callback()).get('/_notfound').expect(404);
   });
 
   it('customByconfig', () => {
-    return request(app.callback())
-      .get('/home/unittest')
-      .expect(200)
-      .expect('customByconfig');
+    return request(app.callback()).get('/home/unittest').expect(200).expect('customByconfig');
   });
 
   it('getArray', () => {
     return request(app.callback())
-      .get('/home/getArray?id[]=1&&id[]=2')
-      .expect({ id: [1, 2] })
+      .get('/home/getArray?id[]=1&&id[]=2&id2[]=1&&id2[]=2&id3[]=1&&id3[]=2')
+      .expect({ id: [1, 2], id2: ['1', '2'], id3: ['1', '2'] })
       .expect(200);
   });
 
+  it('getArray, egg array', () => {
+    return request(app.callback())
+      .get('/home/getArray?id=1&&id=2')
+      .expect({ id: [1, 2] })
+      .expect(200);
+  });
 });
-
