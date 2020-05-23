@@ -1,3 +1,7 @@
+# 0.3.42 / 2020-05-23
+
+- update: isArrayType for param parse.
+
 # 0.3.41 / 2020-05-22
 
 - update: support egg array param.
