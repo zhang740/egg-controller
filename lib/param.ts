@@ -106,7 +106,7 @@ export function FromHeader(paramName?: string): ParameterDecorator {
 }
 
 function formatArg(argValue: any, validateType: any) {
-  const type = getValue(() => (validateType.type === Object ? 'any' : validateType.type), 'any');
+  const type = getValue(() => validateType.type, 'any');
 
   // undefined 和 null 符合可空定义，是否可空由参数校验判断, any 无法转换
   if (type === 'any' || argValue === undefined || argValue === null) {
@@ -146,7 +146,7 @@ function formatArg(argValue: any, validateType: any) {
     case 'object':
     case undefined:
       try {
-        argValue = JSON.parse(argValue);
+        argValue = typeof argValue === 'string' ? JSON.parse(argValue) : argValue;
       } catch (error) {}
       break;
 
