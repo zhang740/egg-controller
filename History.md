@@ -1,3 +1,7 @@
+# 0.3.43 / 2020-05-27
+
+- fix: 'Object' type equal 'any' when format param.
+
 # 0.3.42 / 2020-05-23
 
 - update: isArrayType for param parse.
