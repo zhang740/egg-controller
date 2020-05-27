@@ -30,4 +30,40 @@ export class TypeFormatController extends Controller {
       throw new BadRequestError(`${typeof data} ${data}`);
     }
   }
+
+  /** need the type info 'number' of array */
+  @route('/typeformat/array', {
+    name: 'array',
+    validateMetaInfo: [
+      {
+        name: 'id',
+        rule: {
+          type: 'array',
+          itemType: 'number',
+        },
+      },
+    ],
+    schemas: {
+      params: [
+        {
+          name: 'id3',
+          in: 'query',
+          schema: {
+            type: 'array',
+            items: {
+              type: 'number',
+            },
+          },
+        },
+      ],
+    },
+  })
+  async array(id: any, id2: number[], id3: any) {
+    return { id, id2, id3 };
+  }
+
+  @route('POST /typeformat/array')
+  async postArray(ids: any) {
+    return ids;
+  }
 }

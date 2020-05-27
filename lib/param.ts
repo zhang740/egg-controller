@@ -106,10 +106,10 @@ export function FromHeader(paramName?: string): ParameterDecorator {
 }
 
 function formatArg(argValue: any, validateType: any) {
-  const type = getValue(() => validateType.type, 'any');
+  const type = getValue(() => (validateType.type === Object ? 'any' : validateType.type), 'any');
 
-  // undefined 和 null 符合可空定义，是否可空由参数校验判断
-  if (argValue === undefined || argValue === null) {
+  // undefined 和 null 符合可空定义，是否可空由参数校验判断, any 无法转换
+  if (type === 'any' || argValue === undefined || argValue === null) {
     return argValue;
   }
 
@@ -236,7 +236,7 @@ async function getArgs(ctx: Context, typeInfo: RouteType) {
         return argValue;
       }
 
-      return formatArg(argValue, getValue(() => p.validateType) || p);
+      return formatArg(argValue, getValue(() => p.validateType) || { type: p.type });
     })
   );
 }

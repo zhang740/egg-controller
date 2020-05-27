@@ -63,18 +63,4 @@ describe('test/lib/route.test.js', () => {
   it('customByconfig', () => {
     return request(app.callback()).get('/home/unittest').expect(200).expect('customByconfig');
   });
-
-  it('getArray', () => {
-    return request(app.callback())
-      .get('/home/getArray?id[]=1&&id[]=2&id2[]=1&&id2[]=2&id3[]=1&&id3[]=2')
-      .expect({ id: [1, 2], id2: ['1', '2'], id3: ['1', '2'] })
-      .expect(200);
-  });
-
-  it('getArray, egg array', () => {
-    return request(app.callback())
-      .get('/home/getArray?id=1&&id=2')
-      .expect({ id: [1, 2] })
-      .expect(200);
-  });
 });

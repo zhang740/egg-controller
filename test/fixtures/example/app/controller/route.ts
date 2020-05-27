@@ -39,35 +39,4 @@ export class RouteController {
   async customByconfig() {
     return 'customByconfig';
   }
-
-  /** need the type info 'number' of array */
-  @route('/home/getArray', {
-    name: 'array',
-    validateMetaInfo: [
-      {
-        name: 'id',
-        rule: {
-          type: 'array',
-          itemType: 'number',
-        },
-      },
-    ],
-    schemas: {
-      params: [
-        {
-          name: 'id3',
-          in: 'query',
-          schema: {
-            type: 'array',
-            items: {
-              type: 'number',
-            },
-          },
-        },
-      ],
-    },
-  })
-  async getArray(id: any, id2: number[], id3: any) {
-    return { id, id2, id3 };
-  }
 }
