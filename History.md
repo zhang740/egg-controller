@@ -1,3 +1,7 @@
+# 0.3.44 / 2020-05-27
+
+- update: Object parse.
+
 # 0.3.43 / 2020-05-27
 
 - fix: 'Object' type equal 'any' when format param.
