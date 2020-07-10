@@ -14,10 +14,13 @@ export function convert(data: any) {
               typeof data[prop] === 'string'
                 ? ts.createStringLiteral(data[prop])
                 : Array.isArray(data[prop])
-                ? ts.createArrayLiteral(data[prop].map(item => convert(item)), true)
+                ? ts.createArrayLiteral(
+                    data[prop].map(item => convert(item)),
+                    false
+                  )
                 : convert(data[prop])
             );
           }),
-        true
+        false
       );
 }

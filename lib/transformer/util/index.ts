@@ -6,4 +6,5 @@ export * from './getSchemaByType';
 export * from './getValue';
 export * from './isArrayType';
 export * from './isDecoratorNameInclude';
+export * from './getDecoratorName';
 export * from './walker';
