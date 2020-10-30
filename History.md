@@ -1,3 +1,7 @@
+# 0.3.46 / 2020-10-30
+
+- fix: convert TS to Schema.
+
 # 0.3.35 / 2020-07-10
 
 - refactor: transformer.
