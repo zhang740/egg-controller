@@ -3,6 +3,8 @@ import { SchemasObject, SchemaObject } from 'openapi3-ts';
 import { getSchemaByType, TypeCache } from '../util/getSchemaByType';
 import { convert } from '../util/convert';
 import { getValue, walker, getClsMethodKey, NodeTransformer, getDecoratorName } from '../util';
+import { hasField } from '../util';
+import { getField } from '../util';
 
 interface FileMetaType {
   methodDefine: {
@@ -194,18 +196,4 @@ export function after(
   }
 
   return node => node;
-}
-
-function hasField(config: ts.Expression | undefined, fieldName: string) {
-  return !!getField(config, fieldName);
-}
-
-function getField(config: ts.Expression | undefined, fieldName: string) {
-  const prop =
-    config &&
-    ts.isObjectLiteralExpression(config) &&
-    config.properties.find(p => {
-      return p.name && ts.isIdentifier(p.name) && p.name.escapedText === fieldName;
-    });
-  return prop && ts.isPropertyAssignment(prop) && prop;
 }

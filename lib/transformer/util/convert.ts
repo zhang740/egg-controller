@@ -10,7 +10,7 @@ export function convert(data: any) {
           .filter(key => data[key])
           .map(prop => {
             return ts.createPropertyAssignment(
-              prop,
+              `"${prop}"`,
               typeof data[prop] === 'string'
                 ? ts.createStringLiteral(data[prop])
                 : Array.isArray(data[prop])

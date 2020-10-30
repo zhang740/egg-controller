@@ -8,3 +8,5 @@ export * from './isArrayType';
 export * from './isDecoratorNameInclude';
 export * from './getDecoratorName';
 export * from './walker';
+export * from './hasField';
+export * from './getField';
