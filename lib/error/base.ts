@@ -1,5 +1,5 @@
 export interface ErrorType {
-  code: number;
+  code: number | string;
   message: string;
 }
 
@@ -9,7 +9,7 @@ export abstract class BaseCustomError<ET extends ErrorType = ErrorType> extends 
     return this.status;
   }
 
-  readonly code: number;
+  readonly code: number | string;
   readonly errors: any;
 
   constructor(errorData: string | ET = '', public logData?: any) {
