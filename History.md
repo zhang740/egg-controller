@@ -1,3 +1,7 @@
+# 0.3.47 / 2020-11-10
+
+- update: extend ErrorType.code.
+
 # 0.3.46 / 2020-10-30
 
 - fix: convert TS to Schema.
