@@ -1,6 +1,6 @@
 {
   "name": "egg-controller",
-  "version": "0.3.47",
+  "version": "0.3.48",
   "description": "controller for egg.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

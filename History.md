@@ -1,3 +1,7 @@
+# 0.3.48 / 2021-07-29
+
+- update: route info optional.
+
 # 0.3.47 / 2020-11-10
 
 - update: extend ErrorType.code.
