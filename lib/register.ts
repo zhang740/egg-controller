@@ -34,12 +34,6 @@ export function registerRoute(app: Application) {
       });
   });
 
-  fs.writeFileSync(
-    path.join(app.baseDir, 'run', 'route_map.json'),
-    JSON.stringify(routeDatas, null, 2),
-    { encoding: 'utf8' }
-  );
-
   const pkg = app.config.pkg;
 
   const openAPIInfo = convertToOpenAPI(
@@ -57,11 +51,23 @@ export function registerRoute(app: Application) {
     getRoutes(app.config)
   );
 
-  fs.writeFileSync(
-    path.join(app.baseDir, 'run', 'openapi_3.json'),
-    JSON.stringify(openAPIInfo, null, 2),
-    { encoding: 'utf8' }
-  );
+  try {
+    const logDir = path.join(app.baseDir, 'run');
+
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir);
+    }
+
+    fs.writeFileSync(path.join(logDir, 'route_map.json'), JSON.stringify(routeDatas, null, 2), {
+      encoding: 'utf8',
+    });
+
+    fs.writeFileSync(path.join(logDir, 'openapi_3.json'), JSON.stringify(openAPIInfo, null, 2), {
+      encoding: 'utf8',
+    });
+  } catch (error) {
+    console.error('route info save fail!', error);
+  }
 
   if (config.apiReport.enable) {
     if (!config.apiReport.url) {
